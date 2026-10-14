@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 import { useUiStore } from '../store/uiStore'
 
 const LIGHT_BAR = '#faf9f7'
@@ -21,4 +21,18 @@ export function useApplyTheme() {
     media.addEventListener('change', apply)
     return () => media.removeEventListener('change', apply)
   }, [theme])
+}
+
+const darkQuery = () => window.matchMedia('(prefers-color-scheme: dark)')
+const subscribeSystem = (cb: () => void) => {
+  const m = darkQuery()
+  m.addEventListener('change', cb)
+  return () => m.removeEventListener('change', cb)
+}
+
+/** 今実際に表示している明るさ（「自動」のときは端末の設定） */
+export function useIsDark(): boolean {
+  const theme = useUiStore((s) => s.theme)
+  const systemDark = useSyncExternalStore(subscribeSystem, () => darkQuery().matches)
+  return theme === 'dark' || (theme === 'system' && systemDark)
 }

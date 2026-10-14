@@ -1,7 +1,8 @@
-import { Eye, EyeOff, Settings } from 'lucide-react'
+import { Eye, EyeOff, Moon, Settings, Sun } from 'lucide-react'
 import { Suspense, useEffect } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useLookups } from '../data/useLookups'
+import { useIsDark } from '../lib/theme'
 import { useRecurringRunner } from '../data/useRecurringRunner'
 import { TransactionForm } from '../forms/TransactionForm'
 import { useUiStore } from '../store/uiStore'
@@ -20,6 +21,23 @@ function usePageTitle() {
     window.scrollTo(0, 0)
   }, [pathname])
   return [...primaryNav, settingsNav].find((n) => n.to === pathname)?.label ?? 'kakeibo'
+}
+
+/** ライトとダークを手動で入れ替える（「自動」に戻すのは設定画面から） */
+function ThemeToggle() {
+  const dark = useIsDark()
+  const setTheme = useUiStore((s) => s.setTheme)
+  return (
+    <button
+      type="button"
+      onClick={() => setTheme(dark ? 'light' : 'dark')}
+      aria-label={dark ? 'ライトモードにする' : 'ダークモードにする'}
+      title={dark ? 'ライトモードにする' : 'ダークモードにする'}
+      className="grid size-11 place-items-center rounded-full hover:bg-soft"
+    >
+      {dark ? <Sun size={22} /> : <Moon size={22} />}
+    </button>
+  )
 }
 
 function HideAmountsToggle() {
@@ -58,6 +76,7 @@ export function AppLayout() {
           <OfflineBanner />
           <div className="mx-auto flex h-14 max-w-5xl items-center gap-1 px-4">
             <h1 className="flex-1 font-serif text-xl font-semibold tracking-wide">{title}</h1>
+            <ThemeToggle />
             <HideAmountsToggle />
             <Link
               to={settingsNav.to}
