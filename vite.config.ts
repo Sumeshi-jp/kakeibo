@@ -1,11 +1,47 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // GitHub Pages では https://sumeshi-jp.github.io/kakeibo/ に公開される
 export default defineConfig({
   base: '/kakeibo/',
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['icons/apple-touch-icon-180x180.png', 'icons/favicon-64x64.png'],
+      manifest: {
+        name: 'kakeibo',
+        short_name: 'kakeibo',
+        description: '自分のための家計簿',
+        lang: 'ja',
+        start_url: '/kakeibo/',
+        scope: '/kakeibo/',
+        display: 'standalone',
+        theme_color: '#ffffff',
+        background_color: '#ffffff',
+        icons: [
+          { src: 'icons/pwa-192x192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icons/pwa-512x512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icons/maskable-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        ],
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,png,svg}'],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+        // Google Fonts もオフラインで使えるようにキャッシュする
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/,
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'google-fonts', expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 } },
+          },
+        ],
+      },
+    }),
+  ],
   build: {
     // Firestore SDK 自体が 600kB 強あり分割できないため、上限をそれに合わせる
     chunkSizeWarningLimit: 700,

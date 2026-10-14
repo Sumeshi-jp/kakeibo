@@ -215,8 +215,8 @@ kakeibo/
 - [x] 金額の非表示切り替えをヘッダーに置き、グラフの軸とツールチップにも反映する
 
 ### Phase 8: PWA・デプロイ
-- [ ] vite-plugin-pwa を設定する（manifest、アイコン、`base: '/kakeibo/'`）
-- [ ] `.github/workflows/deploy.yml` を作成し、Firebase の設定値を GitHub Secrets から渡す
+- [x] vite-plugin-pwa を設定する（manifest、アイコン、`base: '/kakeibo/'`）
+- [x] `.github/workflows/deploy.yml` を作成し、Firebase の設定値を GitHub Secrets から渡す
 - [ ] Firebase Auth の承認済みドメインに `sumeshi-jp.github.io` を追加する（ユーザー作業）
 - [ ] スマホ実機でホーム画面に追加し、ログイン、入力、オフライン入力、PCとの同期を確認する
 
@@ -250,3 +250,4 @@ kakeibo/
 - 2026-10-14: Phase 4 — 口座（銀行・現金）とカードの追加・編集・並べ替え・アーカイブ、カテゴリの追加・編集（色12色・アイコン40種）・並べ替え・アーカイブを実装。書き込みは await せずオフラインでも即時に画面へ反映し、失敗時のみ通知。ログイン後の画面の動作確認はユーザーのブラウザで実施予定
 - 2026-10-14: Phase 5〜7 — 入力シート（支出/収入/振替、カテゴリ、支払い方法、日付、メモ、編集・削除）、日別の明細一覧、月の切り替え、クレカ請求と残高・資産の計算（テスト15件）、ホーム・カレンダー・レポート（カテゴリ別ドーナツ＋表、月別収支の棒グラフ＋表）・口座画面（現在残高、カード未払い、資産推移）を実装。収入のグラフ色は彩度不足の判定により #008a7e に（文字色は #0f7f7a のまま）
 - 2026-10-14: 開発用デモモードを追加（`http://localhost:5173/kakeibo/?demo` でサンプルデータ表示。本番ビルドでは無効）。ログイン後の画面をデモモードで確認し、Esc で閉じた後に入力シートが開かない不具合とフォーカス位置を修正
+- 2026-10-14: Phase 8 — PWA（manifest、Service Worker、Google Fonts のキャッシュ）、アイコン生成スクリプト（`npm run icons`、仮アイコンは Didot の K）、GitHub Actions による GitHub Pages への自動デプロイ（Firebase の設定値は Secrets）を設定
