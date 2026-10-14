@@ -3,11 +3,15 @@
 
 @layer base {
   html {
+    /* 横方向のスクロールやはね返りで画面がずれないようにする */
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
   }
 
   body {
+    overflow-x: hidden;
     margin: 0;
     background: var(--color-canvas);
     color: var(--color-ink);
@@ -23,6 +27,13 @@
   select,
   label {
     touch-action: manipulation;
+  }
+
+  /* iPhone の日付欄は幅の指定を無視して広がることがあるため、親の幅に収める */
+  input[type='date'] {
+    min-width: 0;
+    -webkit-appearance: none;
+    appearance: none;
   }
 
   :focus-visible {

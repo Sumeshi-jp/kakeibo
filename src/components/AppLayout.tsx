@@ -6,6 +6,7 @@ import { useRecurringRunner } from '../data/useRecurringRunner'
 import { TransactionForm } from '../forms/TransactionForm'
 import { useUiStore } from '../store/uiStore'
 import { BottomSheet } from './BottomSheet'
+import { ErrorBoundary } from './ErrorBoundary'
 import { OfflineBanner } from './OfflineBanner'
 import { SideNav } from './SideNav'
 import { TabBar } from './TabBar'
@@ -41,6 +42,8 @@ function HideAmountsToggle() {
 
 export function AppLayout() {
   const title = usePageTitle()
+  // 画面を移動したらエラー表示をリセットする
+  const { pathname } = useLocation()
   const entry = useUiStore((s) => s.entry)
   const closeEntry = useUiStore((s) => s.closeEntry)
   // 口座・カテゴリをここで購読しておき、入力シートを開いたときにすぐ使えるようにする
@@ -66,9 +69,11 @@ export function AppLayout() {
           </div>
         </header>
         <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-5 pb-28 md:pb-10">
-          <Suspense fallback={<p className="py-10 text-center text-sm text-slate">読み込み中…</p>}>
-            <Outlet />
-          </Suspense>
+          <ErrorBoundary key={pathname}>
+            <Suspense fallback={<p className="py-10 text-center text-sm text-slate">読み込み中…</p>}>
+              <Outlet />
+            </Suspense>
+          </ErrorBoundary>
         </main>
       </div>
       <TabBar />

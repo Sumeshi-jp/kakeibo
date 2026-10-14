@@ -55,7 +55,7 @@ export function BottomSheet({ open, title, onClose, children }: BottomSheetProps
           <X size={22} />
         </button>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">{children}</div>
+      <div className="min-h-0 flex-1 touch-pan-y overflow-x-hidden overflow-y-auto overscroll-contain p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">{children}</div>
     </dialog>
   )
 }

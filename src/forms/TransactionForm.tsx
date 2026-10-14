@@ -12,6 +12,7 @@ import { SourceOptions } from '../components/SourceOptions'
 import { decodeSource as decode, encodeSource as encode } from '../lib/sourceRef'
 import type { ReceiptGuess } from '../lib/receipt'
 import { useUiStore } from '../store/uiStore'
+import { QuickCategoryAdd } from './QuickCategoryAdd'
 import type { MoneyRef, NewTransaction, Transaction, TransactionType } from '../types'
 
 interface TransactionFormProps {
@@ -173,6 +174,11 @@ export function TransactionForm({ tx, defaultDate, lookups, onDone }: Transactio
                 <span className="w-full truncate text-center">{c.name}</span>
               </button>
             ))}
+            <QuickCategoryAdd
+              type={type === 'income' ? 'income' : 'expense'}
+              siblings={lookups.categories.filter((c) => c.type === type)}
+              onAdded={setCategoryId}
+            />
           </div>
         </fieldset>
       )}
