@@ -64,8 +64,8 @@ export function MonthlyBarChart({ data }: { data: MonthlyPoint[] }) {
                 ) : null
               }
             />
-            <Bar dataKey="income" name="収入" fill={INCOME} radius={[4, 4, 0, 0]} maxBarSize={18} />
-            <Bar dataKey="expense" name="支出" fill={EXPENSE} radius={[4, 4, 0, 0]} maxBarSize={18} />
+            <Bar dataKey="income" name="収入" fill={INCOME} radius={[4, 4, 0, 0]} maxBarSize={18} isAnimationActive={false} />
+            <Bar dataKey="expense" name="支出" fill={EXPENSE} radius={[4, 4, 0, 0]} maxBarSize={18} isAnimationActive={false} />
           </BarChart>
         </ResponsiveContainer>
       </div>

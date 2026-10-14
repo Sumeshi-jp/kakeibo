@@ -1,4 +1,5 @@
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { yTicks } from '../../lib/chartScale'
 import { formatCompact } from '../../lib/money'
 import { ChartTooltip } from './ChartTooltip'
 
@@ -9,12 +10,15 @@ export interface AssetPoint {
 
 const LINE = 'var(--color-ink)'
 
-/** 総資産の推移（1系列なので凡例なし。見出しが系列名を兼ねる） */
-/** hidden: 総資産を隠しているとき（銀行・現金・クレカのどれかを隠しているとき）は軸と吹き出しを伏せる */
+/**
+ * 総資産の推移（1系列なので凡例なし。見出しが系列名を兼ねる）。
+ * hidden のときは縦軸の目盛りと吹き出しの金額を伏せる。
+ */
 export function AssetLineChart({ data, hidden }: { data: AssetPoint[]; hidden: boolean }) {
   if (data.length < 2) {
     return <p className="border-b border-hairline py-6 text-center text-sm text-slate">推移を表示するには2か月分以上の記録が必要です</p>
   }
+  const ticks = yTicks(data.map((d) => d.net))
   return (
     <div className="relative h-56">
       <ResponsiveContainer width="100%" height="100%">
@@ -27,10 +31,13 @@ export function AssetLineChart({ data, hidden }: { data: AssetPoint[]; hidden: b
             tickLine={false}
             axisLine={{ stroke: 'var(--color-silver)' }}
             interval="preserveStartEnd"
+            minTickGap={16}
           />
           <YAxis
-            width={44}
-            domain={['auto', 'auto']}
+            width={48}
+            type="number"
+            domain={[ticks[0], ticks[ticks.length - 1]]}
+            ticks={ticks}
             tickFormatter={(v: number) => formatCompact(v, hidden)}
             tick={{ fontSize: 11, fill: 'var(--color-slate)' }}
             tickLine={false}

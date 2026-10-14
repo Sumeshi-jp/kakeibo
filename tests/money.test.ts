@@ -29,3 +29,24 @@ describe('formatYen', () => {
     expect(formatYen(5, { hidden: true })).toBe('¥•••••')
   })
 })
+
+import { yTicks } from '../src/lib/chartScale'
+
+describe('yTicks（資産推移の目盛り）', () => {
+  it('等間隔のきりのよい値になる', () => {
+    const t = yTicks([706_000, 1_240_000, 1_195_000])
+    const steps = t.slice(1).map((v, i) => v - t[i])
+    expect(new Set(steps).size).toBe(1)
+    expect(t[0]).toBeLessThanOrEqual(706_000)
+    expect(t[t.length - 1]).toBeGreaterThanOrEqual(1_240_000)
+  })
+  it('値が一定でも範囲が潰れない', () => {
+    const t = yTicks([500_000, 500_000, 500_000])
+    expect(t.length).toBeGreaterThanOrEqual(3)
+    expect(t[0]).toBeLessThan(500_000)
+    expect(t[t.length - 1]).toBeGreaterThan(500_000)
+  })
+  it('0 円でも潰れない', () => {
+    expect(yTicks([0, 0]).length).toBeGreaterThanOrEqual(3)
+  })
+})

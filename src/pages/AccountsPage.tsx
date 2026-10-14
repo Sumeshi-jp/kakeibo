@@ -15,8 +15,8 @@ import { CardStatements } from '../forms/CardStatements'
 import { dayLabel, monthOffsetLabel } from '../lib/days'
 import { shiftMonth } from '../lib/dates'
 import type { Account, AccountKind, Card } from '../types'
-import { HIDE_CARD, HIDE_CASH, hideBankKey } from '../lib/hideKeys'
-import { useUiStore } from '../store/uiStore'
+import { HIDE_ASSETS, HIDE_CARD, HIDE_CASH, hideBankKey } from '../lib/hideKeys'
+import { useHidden } from '../store/uiStore'
 
 type Editing =
   | { type: 'account'; kind: AccountKind; account?: Account }
@@ -33,19 +33,15 @@ function AddButton({ label, onClick }: { label: string; onClick: () => void }) {
 
 export default function AccountsPage() {
   const uid = useUid()
-  const { accounts, cards, transactions, calc } = useAssets()
+  const { accounts, cards, calc } = useAssets()
   const [editing, setEditing] = useState<Editing>(null)
   const today = todayString()
   const assets = calc.snapshot(today)
-  // 記録のある最初の月（口座の基準日・取引日のうち最も古いもの）から今月まで。長すぎる場合は直近24か月
-  const earliest = [...accounts.map((a) => a.initialDate), ...transactions.map((t) => t.date)].sort()[0] ?? today
+  // 口座の基準日のうち最も古い月から今月まで（基準日より前の残高はわからないので含めない）。長すぎる場合は直近24か月
+  const earliest = accounts.map((a) => a.initialDate).sort()[0] ?? today
   const startMonth = [earliest.slice(0, 7), shiftMonth(today.slice(0, 7), -23)].sort().at(-1)!
   const series = calc.monthly(startMonth, today)
-  // 総資産は銀行・現金・クレカから計算するので、どれか1つでも隠していれば一緒に隠す
-  const netHidden = useUiStore((s) => {
-    const h = (key: string) => s.hiddenOverrides[key] ?? s.defaultHidden
-    return accounts.some((a) => h(a.kind === 'bank' ? hideBankKey(a.id) : HIDE_CASH)) || (cards.length > 0 && h(HIDE_CARD))
-  })
+  const netHidden = useHidden(HIDE_ASSETS)
 
   const byKind = (kind: AccountKind) => accounts.filter((a) => a.kind === kind)
   const accountName = (id: string) => accounts.find((a) => a.id === id)?.name ?? '未設定'
@@ -92,7 +88,7 @@ export default function AccountsPage() {
           <div>
             <div className="surface-pearl rounded-xl px-5 py-4">
               <p className="text-[2.5rem] leading-tight">
-                <Amount value={assets.net} hidden={netHidden} className="figure" />
+                <Amount value={assets.net} hideKey={HIDE_ASSETS} className="figure" />
               </p>
               <p className="pt-1 text-xs text-slate">銀行と現金の残高合計 − クレカの未払い額</p>
             </div>
