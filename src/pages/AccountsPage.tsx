@@ -62,9 +62,9 @@ export default function AccountsPage() {
             <>
               <Icon size={20} className="shrink-0 text-slate" />
               <span className="min-w-0 flex-1 truncate">{a.name}</span>
-              <Amount value={calc.accountBalance(a, today)} className="font-bold" />
             </>
           )}
+          renderAside={(a) => <Amount value={calc.accountBalance(a, today)} hideKey={`acct:${a.id}`} className="font-bold" />}
         />
       </section>
     )
@@ -84,7 +84,7 @@ export default function AccountsPage() {
         <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
           <div>
             <p className="border-b border-hairline py-3 text-4xl font-bold">
-              <Amount value={assets.net} />
+              <Amount value={assets.net} hideKey="assets:net" />
             </p>
             <p className="pt-2 text-xs text-slate">銀行と現金の残高合計 − クレカの未払い額</p>
           </div>
@@ -112,12 +112,14 @@ export default function AccountsPage() {
                   {dayLabel(c.withdrawalDay)}払い ／ {accountName(c.withdrawalAccountId)}
                 </span>
               </span>
-              <span className="text-right text-xs text-slate">
-                未払い
-                <br />
-                <Amount value={-calc.cardUnpaid(c, today)} className="text-sm font-bold text-ink" />
-              </span>
             </>
+          )}
+          renderAside={(c) => (
+            <span className="text-right text-xs text-slate">
+              未払い
+              <br />
+              <Amount value={-calc.cardUnpaid(c, today)} hideKey={`card:${c.id}`} className="text-sm font-bold text-ink" />
+            </span>
           )}
         />
       </section>

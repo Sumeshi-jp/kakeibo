@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { Amount } from '../components/Amount'
 import { BudgetList } from '../components/BudgetList'
+import { EyeToggle } from '../components/EyeToggle'
 import { CategoryBreakdown } from '../components/charts/CategoryBreakdown'
 import { MonthlyBarChart, type MonthlyPoint } from '../components/charts/MonthlyBarChart'
 import { Segmented } from '../components/fields'
@@ -81,15 +82,19 @@ export default function ReportPage() {
                   <th className="py-1.5 text-right font-normal">収入</th>
                   <th className="py-1.5 text-right font-normal">支出</th>
                   <th className="py-1.5 text-right font-normal">収支</th>
+                  <th className="w-8">
+                    <span className="sr-only">表示</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {[...series].reverse().map((p) => (
                   <tr key={p.month} className="border-b border-hairline">
                     <td className="py-2 tabular">{p.month.replace('-', '/')}</td>
-                    <td className="py-2 text-right"><Amount value={p.income} /></td>
-                    <td className="py-2 text-right"><Amount value={p.expense} /></td>
-                    <td className="py-2 text-right"><Amount value={p.income - p.expense} sign="always" tone="auto" /></td>
+                    <td className="py-2 text-right"><Amount value={p.income} hideKey={`report:month:${p.month}`} eye={false} /></td>
+                    <td className="py-2 text-right"><Amount value={p.expense} hideKey={`report:month:${p.month}`} eye={false} /></td>
+                    <td className="py-2 text-right"><Amount value={p.income - p.expense} hideKey={`report:month:${p.month}`} eye={false} sign="always" tone="auto" /></td>
+                    <td className="py-2 text-right"><EyeToggle hideKey={`report:month:${p.month}`} /></td>
                   </tr>
                 ))}
               </tbody>

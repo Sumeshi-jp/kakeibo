@@ -1,6 +1,7 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { formatCompact } from '../../lib/money'
-import { useUiStore } from '../../store/uiStore'
+import { useHidden } from '../../store/uiStore'
+import { EyeToggle } from '../EyeToggle'
 import { ChartTooltip } from './ChartTooltip'
 
 export interface MonthlyPoint {
@@ -9,15 +10,16 @@ export interface MonthlyPoint {
   expense: number
 }
 
+const HIDE_KEY = 'chart:monthly'
 const INCOME = 'var(--color-income-mark)'
 const EXPENSE = 'var(--color-expense-mark)'
 
 /** 月別の収入と支出（並べた棒）。凡例は上に置く */
 export function MonthlyBarChart({ data }: { data: MonthlyPoint[] }) {
-  const hidden = useUiStore((s) => s.hideAmounts)
+  const hidden = useHidden(HIDE_KEY)
   return (
     <figure>
-      <figcaption className="mb-2 flex gap-4 text-xs text-slate">
+      <figcaption className="mb-2 flex items-center gap-4 text-xs text-slate">
         <span className="flex items-center gap-1.5">
           <span aria-hidden className="size-2.5 rounded-xs" style={{ background: INCOME }} />
           収入
@@ -26,6 +28,7 @@ export function MonthlyBarChart({ data }: { data: MonthlyPoint[] }) {
           <span aria-hidden className="size-2.5 rounded-xs" style={{ background: EXPENSE }} />
           支出
         </span>
+        <EyeToggle hideKey={HIDE_KEY} className="ml-auto" />
       </figcaption>
       <div className="h-56">
         <ResponsiveContainer width="100%" height="100%">
@@ -51,6 +54,7 @@ export function MonthlyBarChart({ data }: { data: MonthlyPoint[] }) {
               content={({ active, payload, label }) =>
                 active && payload?.length ? (
                   <ChartTooltip
+                    hidden={hidden}
                     title={`${String(label).slice(0, 4)}年${Number(String(label).slice(5))}月`}
                     rows={[
                       { label: '収入', value: Number(payload[0]?.payload.income ?? 0), color: INCOME },

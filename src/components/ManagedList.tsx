@@ -9,6 +9,8 @@ interface Item {
 interface ManagedListProps<T extends Item> {
   items: T[]
   renderItem: (item: T) => ReactNode
+  /** 行のボタンの外に置く内容（金額と目のマークなど） */
+  renderAside?: (item: T) => ReactNode
   onSelect: (item: T) => void
   /** 表示中（アーカイブ以外）の並びを入れ替える */
   onMove: (index: number, delta: -1 | 1) => void
@@ -16,7 +18,7 @@ interface ManagedListProps<T extends Item> {
 }
 
 /** 並べ替えボタンとアーカイブ済みの折りたたみが付いた一覧 */
-export function ManagedList<T extends Item>({ items, renderItem, onSelect, onMove, emptyText }: ManagedListProps<T>) {
+export function ManagedList<T extends Item>({ items, renderItem, renderAside, onSelect, onMove, emptyText }: ManagedListProps<T>) {
   const [showArchived, setShowArchived] = useState(false)
   const active = items.filter((i) => !i.archived)
   const archived = items.filter((i) => i.archived)
@@ -30,6 +32,7 @@ export function ManagedList<T extends Item>({ items, renderItem, onSelect, onMov
             <button type="button" onClick={() => onSelect(item)} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 py-2 text-left">
               {renderItem(item)}
             </button>
+            {renderAside?.(item)}
             <div className="flex shrink-0">
               <button
                 type="button"
@@ -67,10 +70,11 @@ export function ManagedList<T extends Item>({ items, renderItem, onSelect, onMov
           {showArchived && (
             <ul className="opacity-60">
               {archived.map((item) => (
-                <li key={item.id} className="border-b border-hairline">
-                  <button type="button" onClick={() => onSelect(item)} className="flex min-h-14 w-full items-center gap-3 py-2 text-left">
+                <li key={item.id} className="flex items-center border-b border-hairline">
+                  <button type="button" onClick={() => onSelect(item)} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 py-2 text-left">
                     {renderItem(item)}
                   </button>
+                  {renderAside?.(item)}
                 </li>
               ))}
             </ul>

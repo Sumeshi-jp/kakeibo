@@ -40,7 +40,7 @@ export function CardStatements({ statements, today }: { statements: CardStatemen
                     {overridden && ' ・ 補正済み'}
                   </span>
                 </span>
-                <Amount value={s.amount} className="font-bold" />
+                <Amount value={s.amount} hideKey={`stmt:${s.cardId}_${s.billingMonth}`} className="font-bold" />
                 <button
                   type="button"
                   aria-label="請求額を補正"
@@ -57,7 +57,7 @@ export function CardStatements({ statements, today }: { statements: CardStatemen
                 <div className="mt-2 flex flex-col gap-2 rounded-sm bg-soft p-3">
                   <YenInput label="実際の請求額" value={value} onChange={setValue} />
                   <p className="text-xs text-slate">
-                    明細から計算した額：<Amount value={s.computedAmount} />
+                    明細から計算した額：<Amount value={s.computedAmount} hideKey={`stmt:${s.cardId}_${s.billingMonth}`} eye={false} />
                   </p>
                   <div className="flex gap-2">
                     <PillButton

@@ -18,8 +18,8 @@ function Row({ tx, lookups }: { tx: Transaction; lookups: Lookups }) {
       : lookups.sourceName(tx.source)
 
   return (
-    <li className="border-b border-hairline">
-      <button type="button" onClick={() => editEntry(tx)} className="flex min-h-14 w-full items-center gap-3 py-2 text-left">
+    <li className="flex items-center gap-2 border-b border-hairline">
+      <button type="button" onClick={() => editEntry(tx)} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 py-2 text-left">
         {tx.type === 'transfer' ? (
           <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-soft text-slate">
             <ArrowRightLeft size={18} />
@@ -37,13 +37,14 @@ function Row({ tx, lookups }: { tx: Transaction; lookups: Lookups }) {
             {sub}
           </span>
         </span>
-        <Amount
-          value={tx.type === 'transfer' ? tx.amount : signedAmount(tx)}
-          sign={tx.type === 'transfer' ? 'none' : 'always'}
-          tone={tx.type === 'transfer' ? 'plain' : 'auto'}
-          className="shrink-0 font-bold"
-        />
       </button>
+      <Amount
+        value={tx.type === 'transfer' ? tx.amount : signedAmount(tx)}
+        hideKey={`tx:${tx.id}`}
+        sign={tx.type === 'transfer' ? 'none' : 'always'}
+        tone={tx.type === 'transfer' ? 'plain' : 'auto'}
+        className="font-bold"
+      />
     </li>
   )
 }
@@ -78,7 +79,7 @@ export function TransactionList({ transactions, lookups, emptyText = '明細は�
         <section key={date}>
           <div className="flex items-baseline justify-between border-b border-ink pb-1 text-sm">
             <h3 className="font-bold">{dayHeading(date)}</h3>
-            <Amount value={txs.reduce((s, t) => s + signedAmount(t), 0)} sign="always" tone="auto" className="text-xs" />
+            <Amount value={txs.reduce((s, t) => s + signedAmount(t), 0)} hideKey={`day:${date}`} sign="always" tone="auto" className="text-xs" />
           </div>
           <ul>
             {txs.map((tx) => (

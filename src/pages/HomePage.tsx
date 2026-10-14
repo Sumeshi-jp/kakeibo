@@ -26,19 +26,19 @@ export default function HomePage() {
         <section>
           <SectionEyebrow>月の収支</SectionEyebrow>
           <p className="border-b border-hairline py-3 text-4xl font-bold">
-            <Amount value={sum.balance} sign="always" tone="auto" />
+            <Amount value={sum.balance} hideKey="home:balance" sign="always" tone="auto" />
           </p>
           <dl className="grid grid-cols-2 gap-4 border-b border-hairline py-3">
             <div>
               <dt className="text-xs text-slate">収入</dt>
               <dd className="text-xl font-bold">
-                <Amount value={sum.income} tone="income" />
+                <Amount value={sum.income} hideKey="home:income" tone="income" />
               </dd>
             </div>
             <div>
               <dt className="text-xs text-slate">支出</dt>
               <dd className="text-xl font-bold">
-                <Amount value={sum.expense} tone="expense" />
+                <Amount value={sum.expense} hideKey="home:expense" tone="expense" />
               </dd>
             </div>
           </dl>
@@ -56,7 +56,7 @@ export default function HomePage() {
                   <span className="flex-1 truncate">
                     {Number(s.withdrawalDate.slice(5, 7))}/{Number(s.withdrawalDate.slice(8))} {lookups.cards.find((c) => c.id === s.cardId)?.name}
                   </span>
-                  <Amount value={s.amount} className="font-bold" />
+                  <Amount value={s.amount} hideKey={`stmt:${s.cardId}_${s.billingMonth}`} className="font-bold" />
                 </li>
               ))}
             </ul>

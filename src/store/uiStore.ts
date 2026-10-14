@@ -7,9 +7,14 @@ import type { MoneyRef, Transaction } from '../types'
 export type EntryState = { mode: 'new'; date?: string } | { mode: 'edit'; tx: Transaction } | null
 
 interface UiState {
-  /** 画面上の金額をすべて隠す（端末ごとの設定） */
-  hideAmounts: boolean
-  toggleHideAmounts: () => void
+  /** 金額を隠すかどうかの既定値（ヘッダーの目のマークで一括切り替え） */
+  defaultHidden: boolean
+  /** 金額ごとの個別設定（キー → 隠すか）。既定値より優先する */
+  hiddenOverrides: Record<string, boolean>
+  /** すべて隠す／すべて表示する */
+  toggleAllHidden: () => void
+  /** 1つの金額だけ切り替える */
+  toggleHidden: (key: string) => void
   /** 入力シート */
   entry: EntryState
   openEntry: (date?: string) => void
@@ -47,8 +52,16 @@ const safeStorage = createJSONStorage(() => {
 export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
-      hideAmounts: false,
-      toggleHideAmounts: () => set((s) => ({ hideAmounts: !s.hideAmounts })),
+      defaultHidden: false,
+      hiddenOverrides: {},
+      // 一括切り替えでは個別設定を消して、すべて同じ状態にそろえる
+      toggleAllHidden: () =>
+        set((s) => {
+          const allHidden = s.defaultHidden && !Object.values(s.hiddenOverrides).includes(false)
+          return { defaultHidden: !allHidden, hiddenOverrides: {} }
+        }),
+      toggleHidden: (key) =>
+        set((s) => ({ hiddenOverrides: { ...s.hiddenOverrides, [key]: !(s.hiddenOverrides[key] ?? s.defaultHidden) } })),
       entry: null,
       openEntry: (date) => set({ entry: { mode: 'new', date } }),
       editEntry: (tx) => set({ entry: { mode: 'edit', tx } }),
@@ -64,7 +77,18 @@ export const useUiStore = create<UiState>()(
     {
       name: 'kakeibo-ui',
       storage: safeStorage,
-      partialize: (s) => ({ hideAmounts: s.hideAmounts, lastSource: s.lastSource }),
+      version: 1,
+      // v0 は一括の hideAmounts だけだった
+      migrate: (old, version) => {
+        const o = (old ?? {}) as { hideAmounts?: boolean; lastSource?: MoneyRef | null }
+        return version === 0 ? { defaultHidden: !!o.hideAmounts, hiddenOverrides: {}, lastSource: o.lastSource ?? null } : old
+      },
+      partialize: (s) => ({ defaultHidden: s.defaultHidden, hiddenOverrides: s.hiddenOverrides, lastSource: s.lastSource }),
     },
   ),
 )
+
+/** キーの金額を隠すか。キーがなければ既定値 */
+export function useHidden(key?: string): boolean {
+  return useUiStore((s) => (key ? (s.hiddenOverrides[key] ?? s.defaultHidden) : s.defaultHidden))
+}

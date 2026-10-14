@@ -22,15 +22,16 @@ function usePageTitle() {
 }
 
 function HideAmountsToggle() {
-  const hidden = useUiStore((s) => s.hideAmounts)
-  const toggle = useUiStore((s) => s.toggleHideAmounts)
+  // すべて隠れているときだけ「隠す」状態の表示にする
+  const hidden = useUiStore((s) => s.defaultHidden && !Object.values(s.hiddenOverrides).includes(false))
+  const toggle = useUiStore((s) => s.toggleAllHidden)
   return (
     <button
       type="button"
       onClick={toggle}
       aria-pressed={hidden}
-      aria-label={hidden ? '金額を表示する' : '金額を隠す'}
-      title={hidden ? '金額を表示する' : '金額を隠す'}
+      aria-label={hidden ? 'すべての金額を表示する' : 'すべての金額を隠す'}
+      title={hidden ? 'すべての金額を表示する' : 'すべての金額を隠す'}
       className="grid size-11 place-items-center rounded-full hover:bg-soft"
     >
       {hidden ? <EyeOff size={22} /> : <Eye size={22} />}

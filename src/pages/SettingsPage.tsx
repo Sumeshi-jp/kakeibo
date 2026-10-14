@@ -99,10 +99,12 @@ export default function SettingsPage() {
                     {frequencyLabel(r)} ／ {lookups.sourceName(r.source)}
                   </span>
                 </span>
-                <Amount value={r.type === 'expense' ? -r.amount : r.amount} sign="always" tone="auto" className="text-sm font-bold" />
               </>
             )
           }}
+          renderAside={(r) => (
+            <Amount value={r.type === 'expense' ? -r.amount : r.amount} hideKey={`rec:${r.id}`} sign="always" tone="auto" className="text-sm font-bold" />
+          )}
         />
       </section>
 
