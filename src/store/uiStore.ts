@@ -9,6 +9,10 @@ interface UiState {
   entryOpen: boolean
   openEntry: () => void
   closeEntry: () => void
+  /** 画面下部に一時的に出すお知らせ */
+  toast: { id: number; message: string; tone: 'info' | 'error' } | null
+  showToast: (message: string, tone?: 'info' | 'error') => void
+  clearToast: () => void
 }
 
 // localStorage が使えない環境（プライベートブラウズ等）でも落ちないようにする
@@ -36,6 +40,9 @@ export const useUiStore = create<UiState>()(
       entryOpen: false,
       openEntry: () => set({ entryOpen: true }),
       closeEntry: () => set({ entryOpen: false }),
+      toast: null,
+      showToast: (message, tone = 'info') => set({ toast: { id: Date.now(), message, tone } }),
+      clearToast: () => set({ toast: null }),
     }),
     {
       name: 'kakeibo-ui',

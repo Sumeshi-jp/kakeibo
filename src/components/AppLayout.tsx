@@ -4,6 +4,7 @@ import { useUiStore } from '../store/uiStore'
 import { BottomSheet } from './BottomSheet'
 import { SideNav } from './SideNav'
 import { TabBar } from './TabBar'
+import { Toast } from './Toast'
 import { primaryNav, settingsNav } from './navItems'
 
 function usePageTitle() {
@@ -55,6 +56,7 @@ export function AppLayout() {
         </main>
       </div>
       <TabBar />
+      <Toast />
       <BottomSheet open={entryOpen} title="収支を入力" onClose={closeEntry}>
         {/* Phase 5 で TransactionForm に置き換える */}
         <p className="text-slate">入力フォームは Phase 5 で実装します。</p>

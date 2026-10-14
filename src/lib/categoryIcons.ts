@@ -1,0 +1,56 @@
+import {
+  Baby, Beer, Bike, BookOpen, Briefcase, Bus, Car, Coffee, Coins, Dumbbell, Ellipsis, Fuel, Gamepad2, Gift,
+  GraduationCap, Heart, House, Landmark, Music, PawPrint, PiggyBank, Pill, Plane, Receipt, Scissors, Shirt,
+  ShoppingBasket, ShoppingCart, Smartphone, Sparkles, Stethoscope, TrainFront, TrendingUp, Tv, Users, Utensils,
+  Wallet, Wifi, Wrench, Zap, type LucideIcon,
+} from 'lucide-react'
+
+/** カテゴリに選べるアイコン（Firestore には左側の名前で保存する） */
+export const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  utensils: Utensils,
+  coffee: Coffee,
+  beer: Beer,
+  'shopping-basket': ShoppingBasket,
+  'shopping-cart': ShoppingCart,
+  'train-front': TrainFront,
+  bus: Bus,
+  car: Car,
+  fuel: Fuel,
+  bike: Bike,
+  plane: Plane,
+  house: House,
+  zap: Zap,
+  wifi: Wifi,
+  smartphone: Smartphone,
+  tv: Tv,
+  'gamepad-2': Gamepad2,
+  music: Music,
+  'book-open': BookOpen,
+  'graduation-cap': GraduationCap,
+  shirt: Shirt,
+  scissors: Scissors,
+  sparkles: Sparkles,
+  stethoscope: Stethoscope,
+  pill: Pill,
+  dumbbell: Dumbbell,
+  heart: Heart,
+  users: Users,
+  baby: Baby,
+  'paw-print': PawPrint,
+  gift: Gift,
+  wrench: Wrench,
+  receipt: Receipt,
+  briefcase: Briefcase,
+  coins: Coins,
+  'piggy-bank': PiggyBank,
+  'trending-up': TrendingUp,
+  landmark: Landmark,
+  wallet: Wallet,
+  ellipsis: Ellipsis,
+}
+
+/** カテゴリに選べる色（白地で白抜きアイコンが読める濃さにしている） */
+export const CATEGORY_COLORS = [
+  '#c2410c', '#a16207', '#4d7c0f', '#047857', '#0f7f7a', '#0e7490',
+  '#1d4ed8', '#4338ca', '#6d28d9', '#9333ea', '#be185d', '#595959',
+]
