@@ -1,6 +1,6 @@
 import { addMonths, endOfMonth, format, parseISO } from 'date-fns'
 import type { Account, Card, Transaction } from '../types'
-import { billingCycleFor, buildStatements, type CardStatement } from './cardBilling'
+import { buildStatements, type CardStatement } from './cardBilling'
 
 /** 口座残高の増減1件 */
 interface Movement {
@@ -30,42 +30,44 @@ export function movements(transactions: Transaction[], statements: CardStatement
 }
 
 /**
- * asOf 時点の口座残高。
- * 初期残高は「基準日の時点（その日の収支を記録する前）」の残高とみなし、基準日以降の増減を足す。
+ * 日付の昇順に並べた値の累計。「ある日付までの合計」を二分探索で O(log n) で求める。
+ * 資産推移では月ごとに何十回も残高を求めるため、毎回すべての明細を数え直さないようにしている。
  */
-export function accountBalance(account: Account, moves: Movement[], asOf: string): number {
-  if (asOf < account.initialDate) return 0
-  return moves.reduce(
-    (sum, m) => (m.accountId === account.id && m.date >= account.initialDate && m.date <= asOf ? sum + m.delta : sum),
-    account.initialBalance,
-  )
-}
+class DatedSums {
+  private dates: string[] = []
+  private sums: number[] = [0]
 
-/**
- * asOf 時点でまだ引き落とされていないカード利用額（カードごと）。
- * 締め済みの請求は請求額（補正があれば補正額）、締め前の請求は asOf までの利用額を数える。
- */
-export function cardUnpaid(card: Card, transactions: Transaction[], statements: CardStatement[], asOf: string): number {
-  let sum = 0
-  for (const st of statements) {
-    if (st.cardId !== card.id || st.withdrawalDate <= asOf) continue
-    if (st.closingDate <= asOf) {
-      sum += st.amount
-      continue
-    }
-    for (const tx of transactions) {
-      if (
-        tx.type === 'expense' &&
-        tx.source.kind === 'card' &&
-        tx.source.id === card.id &&
-        tx.date <= asOf &&
-        billingCycleFor(card, tx.date).billingMonth === st.billingMonth
-      ) {
-        sum += tx.amount
-      }
+  constructor(entries: { date: string; value: number }[]) {
+    const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date))
+    for (const e of sorted) {
+      this.dates.push(e.date)
+      this.sums.push(this.sums[this.sums.length - 1] + e.value)
     }
   }
-  return sum
+
+  /** date 以下（その日を含む）の合計 */
+  upTo(date: string): number {
+    let lo = 0
+    let hi = this.dates.length
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1
+      if (this.dates[mid] <= date) lo = mid + 1
+      else hi = mid
+    }
+    return this.sums[lo]
+  }
+
+  /** from より前（その日を含まない）の合計 */
+  before(date: string): number {
+    let lo = 0
+    let hi = this.dates.length
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1
+      if (this.dates[mid] < date) lo = mid + 1
+      else hi = mid
+    }
+    return this.sums[lo]
+  }
 }
 
 export interface AssetSnapshot {
@@ -82,23 +84,63 @@ export function createAssetCalculator(accounts: Account[], cards: Card[], transa
   const statements = buildStatements(cards, transactions, overrides)
   const moves = movements(transactions, statements, cards)
 
+  // 口座ごとの増減の累計
+  const movesByAccount = new Map<string, { date: string; value: number }[]>()
+  for (const m of moves) {
+    const list = movesByAccount.get(m.accountId) ?? []
+    list.push({ date: m.date, value: m.delta })
+    movesByAccount.set(m.accountId, list)
+  }
+  const accountSums = new Map([...movesByAccount].map(([id, list]) => [id, new DatedSums(list)]))
+
+  // カードごとの請求と、請求ごとの利用の累計
+  const statementsByCard = new Map<string, { st: CardStatement; usage: DatedSums }[]>()
+  for (const st of statements) {
+    const list = statementsByCard.get(st.cardId) ?? []
+    list.push({ st, usage: new DatedSums(st.usage.map((u) => ({ date: u.date, value: u.amount }))) })
+    statementsByCard.set(st.cardId, list)
+  }
+
+  /**
+   * asOf 時点の口座残高。
+   * 初期残高は「基準日の時点（その日の収支を記録する前）」の残高とみなし、基準日以降の増減を足す。
+   */
+  const accountBalance = (account: Account, asOf: string): number => {
+    if (asOf < account.initialDate) return 0
+    const sums = accountSums.get(account.id)
+    return account.initialBalance + (sums ? sums.upTo(asOf) - sums.before(account.initialDate) : 0)
+  }
+
+  /**
+   * asOf 時点でまだ引き落とされていないカード利用額。
+   * 締め済みの請求は請求額（補正があれば補正額）、締め前の請求は asOf までの利用額を数える。
+   */
+  const cardUnpaid = (card: Card, asOf: string): number => {
+    let sum = 0
+    for (const { st, usage } of statementsByCard.get(card.id) ?? []) {
+      if (st.withdrawalDate <= asOf) continue
+      sum += st.closingDate <= asOf ? st.amount : usage.upTo(asOf)
+    }
+    return sum
+  }
+
   const snapshot = (asOf: string): AssetSnapshot => {
     let cash = 0
     let bank = 0
     for (const a of accounts) {
-      const b = accountBalance(a, moves, asOf)
+      const b = accountBalance(a, asOf)
       if (a.kind === 'cash') cash += b
       else bank += b
     }
-    const unpaid = cards.reduce((s, c) => s + cardUnpaid(c, transactions, statements, asOf), 0)
+    const unpaid = cards.reduce((s, c) => s + cardUnpaid(c, asOf), 0)
     return { asOf, cash, bank, cardUnpaid: unpaid, net: cash + bank - unpaid }
   }
 
   return {
     statements,
     snapshot,
-    accountBalance: (a: Account, asOf: string) => accountBalance(a, moves, asOf),
-    cardUnpaid: (c: Card, asOf: string) => cardUnpaid(c, transactions, statements, asOf),
+    accountBalance,
+    cardUnpaid,
     /** asOf より後に引き落とされる請求（直近順） */
     upcoming: (asOf: string) => statements.filter((s) => s.withdrawalDate > asOf && s.amount !== 0),
     /** 月末ごとの資産推移。最後の月は asOf（今日）時点 */

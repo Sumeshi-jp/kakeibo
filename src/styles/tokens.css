@@ -37,13 +37,14 @@
   --radius-xl: 22px;
 
   /* Type */
-  --font-sans: "Roboto", "Noto Sans JP", system-ui, sans-serif;
+  /* 日本語は端末のフォント（iPhone・Mac はヒラギノ、Windows は游ゴシック）を使い、重い Web フォントを読み込まない */
+  --font-sans: "Roboto", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, sans-serif;
   /* 見出し */
-  --font-serif: "Noto Serif JP", serif;
+  --font-serif: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
   /* ロゴ（アイコンの K と同じ雰囲気の筆記体寄りのセリフ） */
   --font-brand: "Cormorant Garamond", serif;
   /* 大きな金額・月の見出し（数字の高さがそろうセリフ体） */
-  --font-figure: "Playfair Display", "Noto Serif JP", serif;
+  --font-figure: "Playfair Display", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
 
   /* 影はカードとシートだけに使う、ごく淡いもの */
   --shadow-card: 0 1px 2px rgb(20 18 14 / 0.04), 0 8px 24px rgb(20 18 14 / 0.06);

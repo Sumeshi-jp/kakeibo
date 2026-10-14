@@ -13,14 +13,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () =>
       DEMO
         ? undefined
-        : onAuthStateChanged(auth, async (u) => {
-        if (u) {
-          // 初回ログイン時だけカテゴリと「財布」口座を作る。失敗してもアプリは使えるようにする
-          await seedIfNeeded(u.uid).catch((e) => console.error('初期データの作成に失敗しました', e))
-        }
-        setUser(u)
-        setLoading(false)
-      }),
+        : onAuthStateChanged(auth, (u) => {
+            // 画面はすぐに出し、初期データ（初回ログイン時だけ作るカテゴリと「財布」口座）の確認は裏で行う。
+            // 作成されたデータはリアルタイム購読で画面に反映される
+            if (u) seedIfNeeded(u.uid).catch((e) => console.error('初期データの作成に失敗しました', e))
+            setUser(u)
+            setLoading(false)
+          }),
     [],
   )
 

@@ -72,7 +72,7 @@ export function AppLayout() {
     <div className="flex min-h-dvh">
       <SideNav />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="pt-safe sticky top-0 z-10 border-b border-hairline bg-canvas/85 backdrop-blur-md">
+        <header className="pt-safe sticky top-0 z-10 border-b border-hairline bg-canvas/95">
           <OfflineBanner />
           <div className="mx-auto flex h-14 max-w-5xl items-center gap-1 px-4">
             <h1 className="flex-1 font-serif text-xl font-semibold tracking-wide">{title}</h1>

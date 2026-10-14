@@ -30,7 +30,7 @@ export function TabBar() {
   return (
     <nav
       aria-label="メイン"
-      className="pb-safe fixed inset-x-0 bottom-0 z-20 border-t border-hairline bg-canvas/85 backdrop-blur-md md:hidden"
+      className="pb-safe fixed inset-x-0 bottom-0 z-20 border-t border-hairline bg-canvas/95 md:hidden"
     >
       <div className="flex items-center">
         <Tab item={a} />
