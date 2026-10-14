@@ -17,6 +17,7 @@ import { Amount } from '../components/Amount'
 import { moved, reorderItems } from '../data/mutations'
 import { CategoryForm } from '../forms/CategoryForm'
 import { PinSettings } from '../lock/PinSettings'
+import { useUiStore } from '../store/uiStore'
 import type { Category, CategoryType, RecurringRule } from '../types'
 
 function AddButton({ onClick }: { onClick: () => void }) {
@@ -36,6 +37,8 @@ export default function SettingsPage() {
   const [editingRule, setEditingRule] = useState<{ rule?: RecurringRule } | null>(null)
   const { data: rules } = useRecurring()
   const lookups = useLookups()
+  const theme = useUiStore((s) => s.theme)
+  const setTheme = useUiStore((s) => s.setTheme)
   const { data: allTxs } = useAllTransactions()
   const { data: overrides } = useCardStatementOverrides()
 
@@ -144,6 +147,21 @@ export default function SettingsPage() {
             <Download size={18} /> JSON（すべて）
           </PillButton>
         </div>
+      </section>
+
+      <section>
+        <SectionEyebrow>画面の明るさ</SectionEyebrow>
+        <Segmented
+          label="表示"
+          value={theme}
+          onChange={setTheme}
+          options={[
+            { value: 'system', label: '自動' },
+            { value: 'light', label: 'ライト' },
+            { value: 'dark', label: 'ダーク' },
+          ]}
+        />
+        <p className="pt-2 text-xs text-slate">「自動」は端末の設定（ダークモード）に合わせます。この端末だけの設定です。</p>
       </section>
 
       <PinSettings />

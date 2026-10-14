@@ -69,7 +69,7 @@ export default function CalendarPage() {
                 >
                   <span className="flex items-center justify-center gap-0.5">
                     <span
-                      className={`grid size-6 place-items-center rounded-full text-xs tabular ${key === today ? 'bg-ink font-bold text-white' : ''} ${isSelected && key !== today ? 'ring-1 ring-ink' : ''}`}
+                      className={`grid size-6 place-items-center rounded-full text-xs tabular ${key === today ? 'bg-ink font-bold text-on-ink' : ''} ${isSelected && key !== today ? 'ring-1 ring-ink' : ''}`}
                     >
                       {d.getDate()}
                     </span>

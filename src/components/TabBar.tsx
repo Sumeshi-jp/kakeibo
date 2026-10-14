@@ -40,7 +40,7 @@ export function TabBar() {
             type="button"
             onClick={() => openEntry()}
             aria-label="収支を入力"
-            className="grid size-12 place-items-center rounded-full bg-ink text-white shadow-[0_6px_16px_rgb(20_18_14/0.25)] ring-4 ring-canvas transition-transform active:scale-95"
+            className="grid size-12 place-items-center rounded-full bg-ink text-on-ink shadow-[var(--shadow-fab)] ring-4 ring-canvas transition-transform active:scale-95"
           >
             <Plus size={26} strokeWidth={2.4} />
           </button>

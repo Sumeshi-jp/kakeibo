@@ -24,7 +24,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
         <p className="text-lg font-bold">画面の表示中にエラーが起きました</p>
         <p className="text-sm text-slate">再読み込みすると直ることがあります。何度も起きる場合は、下の内容を教えてください。</p>
         <pre className="overflow-x-auto rounded-sm bg-soft p-3 text-xs whitespace-pre-wrap text-charcoal">{error.message}</pre>
-        <button type="button" onClick={() => location.reload()} className="min-h-11 rounded-lg bg-ink px-5 text-white">
+        <button type="button" onClick={() => location.reload()} className="min-h-11 rounded-lg bg-ink px-5 text-on-ink">
           再読み込み
         </button>
       </div>

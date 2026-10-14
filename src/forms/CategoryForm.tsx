@@ -79,7 +79,7 @@ export function CategoryForm({ category, type, siblings, onDone }: CategoryFormP
               aria-label={key}
               aria-pressed={icon === key}
               onClick={() => setIcon(key)}
-              className={`grid aspect-square min-h-11 place-items-center rounded-md border ${icon === key ? 'border-ink bg-ink text-white' : 'border-hairline text-charcoal'}`}
+              className={`grid aspect-square min-h-11 place-items-center rounded-md border ${icon === key ? 'border-ink bg-ink text-on-ink' : 'border-hairline text-charcoal'}`}
             >
               <Icon size={20} />
             </button>

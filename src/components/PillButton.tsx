@@ -8,7 +8,7 @@ interface PillButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<Variant, string> = {
-  dark: 'bg-ink text-white hover:bg-charcoal',
+  dark: 'bg-ink text-on-ink hover:bg-charcoal',
   outline: 'border border-ink bg-canvas text-ink hover:bg-soft',
   danger: 'border border-expense bg-canvas text-expense hover:bg-soft',
 }

@@ -14,6 +14,8 @@
 
   /* Text */
   --color-ink: #151515;
+  /* ink（主ボタンなど）の上に載せる文字色 */
+  --color-on-ink: #ffffff;
   --color-charcoal: #33312d;
   --color-slate: #5c5953;
 
@@ -45,6 +47,11 @@
 
   /* 影はカードとシートだけに使う、ごく淡いもの */
   --shadow-card: 0 1px 2px rgb(20 18 14 / 0.04), 0 8px 24px rgb(20 18 14 / 0.06);
+  --shadow-fab: 0 6px 16px rgb(20 18 14 / 0.25);
+  /* パール調カード（アイコンと同じ淡いグレーのグラデーション） */
+  --color-pearl-from: #ffffff;
+  --color-pearl-mid: #f3f2ef;
+  --color-pearl-to: #e7e5e0;
 }
 
 /* PIN を間違えたときに丸を左右に揺らす */
@@ -52,4 +59,61 @@
   0%, 100% { transform: translateX(0); }
   20%, 60% { transform: translateX(-8px); }
   40%, 80% { transform: translateX(8px); }
+}
+
+/*
+ * ダークモード。温かみのあるチャコールの地にアイボリーの文字。
+ * 設定が「自動」のときは端末の設定に合わせ、「ライト」「ダーク」を選ぶと固定する（<html data-theme>）。
+ * コントラストは本文 4.5:1 以上（最も低い slate on soft で 5.9:1）、グラフの色は dataviz の検証を通したもの。
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --color-canvas: #141311;
+    --color-paper: #1c1b18;
+    --color-soft: #23211e;
+    --color-hairline: #34312c;
+    --color-silver: #57524a;
+    --color-ink: #f2efe8;
+    --color-on-ink: #151515;
+    --color-charcoal: #d6d0c5;
+    --color-slate: #a29c90;
+    --color-marker: #c9a46c;
+    --color-expense: #ff7b86;
+    --color-income: #4cc9b8;
+    --color-income-mark: #2a9d8e;
+    --color-expense-mark: #e5505f;
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 28px rgb(0 0 0 / 0.35);
+    --shadow-fab: 0 6px 18px rgb(0 0 0 / 0.5);
+    --color-pearl-from: #2a2824;
+    --color-pearl-mid: #211f1c;
+    --color-pearl-to: #1a1916;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-canvas: #141311;
+  --color-paper: #1c1b18;
+  --color-soft: #23211e;
+  --color-hairline: #34312c;
+  --color-silver: #57524a;
+  --color-ink: #f2efe8;
+  --color-on-ink: #151515;
+  --color-charcoal: #d6d0c5;
+  --color-slate: #a29c90;
+  --color-marker: #c9a46c;
+  --color-expense: #ff7b86;
+  --color-income: #4cc9b8;
+  --color-income-mark: #2a9d8e;
+  --color-expense-mark: #e5505f;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 28px rgb(0 0 0 / 0.35);
+  --shadow-fab: 0 6px 18px rgb(0 0 0 / 0.5);
+  --color-pearl-from: #2a2824;
+  --color-pearl-mid: #211f1c;
+  --color-pearl-to: #1a1916;
+}
+
+:root {
+  color-scheme: light;
 }

@@ -4,6 +4,8 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 import type { MoneyRef, Transaction } from '../types'
 
 /** 入力シートの状態。new は新規（日付の初期値つき）、edit は既存の明細の編集 */
+export type ThemeSetting = 'system' | 'light' | 'dark'
+
 export type EntryState = { mode: 'new'; date?: string } | { mode: 'edit'; tx: Transaction } | null
 
 interface UiState {
@@ -20,6 +22,9 @@ interface UiState {
   openEntry: (date?: string) => void
   editEntry: (tx: Transaction) => void
   closeEntry: () => void
+  /** 画面の明るさ。system は端末の設定に合わせる */
+  theme: ThemeSetting
+  setTheme: (theme: ThemeSetting) => void
   /** 前回使った支払い方法（次の入力の初期値にする） */
   lastSource: MoneyRef | null
   setLastSource: (ref: MoneyRef) => void
@@ -66,6 +71,8 @@ export const useUiStore = create<UiState>()(
       openEntry: (date) => set({ entry: { mode: 'new', date } }),
       editEntry: (tx) => set({ entry: { mode: 'edit', tx } }),
       closeEntry: () => set({ entry: null }),
+      theme: 'system',
+      setTheme: (theme) => set({ theme }),
       lastSource: null,
       setLastSource: (ref) => set({ lastSource: ref }),
       month: format(new Date(), 'yyyy-MM'),
@@ -83,7 +90,7 @@ export const useUiStore = create<UiState>()(
         const o = (old ?? {}) as { hideAmounts?: boolean; lastSource?: MoneyRef | null }
         return version === 0 ? { defaultHidden: !!o.hideAmounts, hiddenOverrides: {}, lastSource: o.lastSource ?? null } : old
       },
-      partialize: (s) => ({ defaultHidden: s.defaultHidden, hiddenOverrides: s.hiddenOverrides, lastSource: s.lastSource }),
+      partialize: (s) => ({ defaultHidden: s.defaultHidden, hiddenOverrides: s.hiddenOverrides, lastSource: s.lastSource, theme: s.theme }),
     },
   ),
 )

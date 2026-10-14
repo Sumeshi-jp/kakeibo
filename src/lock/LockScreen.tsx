@@ -52,7 +52,7 @@ export function LockScreen() {
                 await signOutUser()
                 unlock()
               }}
-              className="min-h-11 rounded-lg bg-ink px-5 text-white"
+              className="min-h-11 rounded-lg bg-ink px-5 text-on-ink"
             >
               ログアウトする
             </button>

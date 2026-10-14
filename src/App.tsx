@@ -1,5 +1,6 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthProvider'
+import { useApplyTheme } from './lib/theme'
 import { RequireAuth } from './auth/RequireAuth'
 import { AppLayout } from './components/AppLayout'
 import { lazy } from 'react'
@@ -14,6 +15,7 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 
 // GitHub Pages はURLの書き換えができないため HashRouter（#/calendar 形式）を使う
 export default function App() {
+  useApplyTheme()
   return (
     <AuthProvider>
       <HashRouter>

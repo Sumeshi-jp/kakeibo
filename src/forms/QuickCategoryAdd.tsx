@@ -83,7 +83,7 @@ export function QuickCategoryAdd({ type, siblings, onAdded }: QuickCategoryAddPr
         ))}
       </div>
       <div className="flex gap-2">
-        <button type="button" onClick={add} disabled={!name.trim()} className="min-h-10 flex-1 rounded-lg bg-ink text-sm text-white disabled:opacity-40">
+        <button type="button" onClick={add} disabled={!name.trim()} className="min-h-10 flex-1 rounded-lg bg-ink text-sm text-on-ink disabled:opacity-40">
           追加して選ぶ
         </button>
         <button type="button" onClick={() => setOpen(false)} className="min-h-10 flex-1 rounded-lg border border-ink text-sm">

@@ -80,7 +80,7 @@
 
   /* アイコンと同じ淡いグレーのグラデーション */
   .surface-pearl {
-    background: linear-gradient(135deg, #ffffff 0%, #f3f2ef 55%, #e7e5e0 100%);
+    background: linear-gradient(135deg, var(--color-pearl-from) 0%, var(--color-pearl-mid) 55%, var(--color-pearl-to) 100%);
     box-shadow: var(--shadow-card);
   }
 
