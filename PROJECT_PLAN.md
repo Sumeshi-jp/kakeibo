@@ -1,7 +1,7 @@
 # kakeibo（個人用 家計簿Webアプリ）設計書
 
 > 最終更新: 2026-10-14
-> ステータス: Phase 1 実装中
+> ステータス: Phase 3 着手前
 
 ## プロジェクト概要
 
@@ -173,16 +173,16 @@ kakeibo/
 - [x] `npm create vite@latest kakeibo -- --template react-ts` でプロジェクトを作成し、`git init` する
 - [x] 依存パッケージを導入する（`react-router-dom firebase zustand date-fns recharts`、開発用に `tailwindcss @tailwindcss/vite vite-plugin-pwa vitest`）
 - [x] `.gitignore`（node_modules, dist, .env.local）と `.env.example` を用意する
-- [ ] **ユーザー作業**：Firebase コンソールでプロジェクトを作成し、Authentication（Google）と Firestore（東京リージョン `asia-northeast1`）を有効にして、Web アプリの設定値を `.env.local` に記入する（手順書を用意します）
+- [x] **ユーザー作業**：Firebase コンソールでプロジェクトを作成し、Authentication（Google）と Firestore（東京リージョン `asia-northeast1`）を有効にして、Web アプリの設定値を `.env.local` に記入する（手順書を用意します）
 - [x] `src/lib/firebase.ts` を作成し、オフライン永続化（`persistentLocalCache`）を有効にする
 - [x] GitHub にリポジトリ `Sumeshi-jp/kakeibo` を作成し、最初の push を行う
 
 ### Phase 2: デザイン基盤・レイアウト
-- [ ] `src/styles/tokens.css` にデザイントークンを定義し、Tailwind の theme に接続する
-- [ ] Roboto と Noto Sans JP を読み込み、文字の階層を定義する（見出し、セクション名、本文、補足）
-- [ ] 基本部品を作る：`PillButton`、`SectionEyebrow`、`Amount`、カプセル型の入力欄
-- [ ] スマホの `TabBar` と PC の `SideNav`、共通レイアウト（768px で切り替え）を作る
-- [ ] HashRouter でルーティングを設定する（`/`, `/calendar`, `/report`, `/accounts`, `/settings`）
+- [x] `src/styles/tokens.css` にデザイントークンを定義し、Tailwind の theme に接続する
+- [x] Roboto と Noto Sans JP を読み込み、文字の階層を定義する（見出し、セクション名、本文、補足）
+- [x] 基本部品を作る：`PillButton`、`SectionEyebrow`、`Amount`、カプセル型の入力欄
+- [x] スマホの `TabBar` と PC の `SideNav`、共通レイアウト（768px で切り替え）を作る
+- [x] HashRouter でルーティングを設定する（`/`, `/calendar`, `/report`, `/accounts`, `/settings`）
 
 ### Phase 3: 認証・データ層
 - [ ] `LoginPage` とGoogleログイン、ログイン状態の管理を作り、未ログイン時は `/login` に移動させる
@@ -244,3 +244,4 @@ kakeibo/
 
 - 2026-10-14: 設計書を作成
 - 2026-10-14: Phase 1 — Vite + React + TS の初期化、パッケージ導入、Firebase 接続設定（`.env.local`）、GitHub リポジトリ作成。npm audit で firebase 依存の @grpc/grpc-js に high 警告4件（Node 用の通信ライブラリで、ブラウザでは使われないため対応は保留）
+- 2026-10-14: Firebase の Authentication（Google）と Firestore（東京）を有効化済み（ユーザー作業）。Phase 2 — デザイントークン、フォント、基本部品（Amount / SectionEyebrow / PillButton / TextInput / BottomSheet）、タブバーとサイドバー、HashRouter と各画面の仮表示を実装。金額を隠す切り替えをヘッダーに配置（localStorage に保存）

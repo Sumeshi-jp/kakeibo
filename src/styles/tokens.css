@@ -1,0 +1,34 @@
+/*
+ * デザイントークン
+ * 白地・フラット・罫線で区切る。オレンジは目印（セクションバー）専用で、操作には使わない。
+ * 意味を持つ色は「支出」と「収入」の2つだけ。
+ */
+@theme {
+  /* Surface */
+  --color-canvas: #ffffff;
+  --color-soft: #f0f0f0;
+  --color-hairline: #d8d8d8;
+  --color-silver: #bebebe;
+
+  /* Text */
+  --color-ink: #111111;
+  --color-charcoal: #333333;
+  --color-slate: #595959;
+
+  /* Brand marker */
+  --color-marker: #fa9000;
+
+  /* Semantic */
+  --color-expense: #c31833;
+  --color-income: #0f7f7a;
+
+  /* Radius */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+
+  /* Type */
+  --font-sans: "Roboto", "Noto Sans JP", system-ui, sans-serif;
+}
