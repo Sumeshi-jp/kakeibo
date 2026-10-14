@@ -1,7 +1,5 @@
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { formatCompact } from '../../lib/money'
-import { useHidden } from '../../store/uiStore'
-import { EyeToggle } from '../EyeToggle'
 import { ChartTooltip } from './ChartTooltip'
 
 export interface AssetPoint {
@@ -9,18 +7,16 @@ export interface AssetPoint {
   net: number
 }
 
-const HIDE_KEY = 'chart:assets'
 const LINE = 'var(--color-ink)'
 
 /** 総資産の推移（1系列なので凡例なし。見出しが系列名を兼ねる） */
-export function AssetLineChart({ data }: { data: AssetPoint[] }) {
-  const hidden = useHidden(HIDE_KEY)
+/** hidden: 総資産を隠しているとき（銀行・現金・クレカのどれかを隠しているとき）は軸と吹き出しを伏せる */
+export function AssetLineChart({ data, hidden }: { data: AssetPoint[]; hidden: boolean }) {
   if (data.length < 2) {
     return <p className="border-b border-hairline py-6 text-center text-sm text-slate">推移を表示するには2か月分以上の記録が必要です</p>
   }
   return (
     <div className="relative h-56">
-      <EyeToggle hideKey={HIDE_KEY} className="absolute top-0 right-0 z-10" />
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           <CartesianGrid vertical={false} stroke="var(--color-hairline)" />

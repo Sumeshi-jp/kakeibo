@@ -15,6 +15,8 @@ import { CardStatements } from '../forms/CardStatements'
 import { dayLabel, monthOffsetLabel } from '../lib/days'
 import { shiftMonth } from '../lib/dates'
 import type { Account, AccountKind, Card } from '../types'
+import { HIDE_CARD, HIDE_CASH, hideBankKey } from '../lib/hideKeys'
+import { useUiStore } from '../store/uiStore'
 
 type Editing =
   | { type: 'account'; kind: AccountKind; account?: Account }
@@ -39,6 +41,11 @@ export default function AccountsPage() {
   const earliest = [...accounts.map((a) => a.initialDate), ...transactions.map((t) => t.date)].sort()[0] ?? today
   const startMonth = [earliest.slice(0, 7), shiftMonth(today.slice(0, 7), -23)].sort().at(-1)!
   const series = calc.monthly(startMonth, today)
+  // 総資産は銀行・現金・クレカから計算するので、どれか1つでも隠していれば一緒に隠す
+  const netHidden = useUiStore((s) => {
+    const h = (key: string) => s.hiddenOverrides[key] ?? s.defaultHidden
+    return accounts.some((a) => h(a.kind === 'bank' ? hideBankKey(a.id) : HIDE_CASH)) || (cards.length > 0 && h(HIDE_CARD))
+  })
 
   const byKind = (kind: AccountKind) => accounts.filter((a) => a.kind === kind)
   const accountName = (id: string) => accounts.find((a) => a.id === id)?.name ?? '未設定'
@@ -64,7 +71,7 @@ export default function AccountsPage() {
               <span className="min-w-0 flex-1 truncate">{a.name}</span>
             </>
           )}
-          renderAside={(a) => <Amount value={calc.accountBalance(a, today)} hideKey={`acct:${a.id}`} className="font-bold" />}
+          renderAside={(a) => <Amount value={calc.accountBalance(a, today)} hideKey={a.kind === 'bank' ? hideBankKey(a.id) : HIDE_CASH} className="font-bold" />}
         />
       </section>
     )
@@ -84,11 +91,11 @@ export default function AccountsPage() {
         <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
           <div>
             <p className="border-b border-hairline py-3 text-4xl font-bold">
-              <Amount value={assets.net} hideKey="assets:net" />
+              <Amount value={assets.net} hidden={netHidden} />
             </p>
             <p className="pt-2 text-xs text-slate">銀行と現金の残高合計 − クレカの未払い額</p>
           </div>
-          <AssetLineChart data={series} />
+          <AssetLineChart data={series} hidden={netHidden} />
         </div>
       </section>
       <div className="flex flex-col gap-10">
@@ -118,7 +125,7 @@ export default function AccountsPage() {
             <span className="text-right text-xs text-slate">
               未払い
               <br />
-              <Amount value={-calc.cardUnpaid(c, today)} hideKey={`card:${c.id}`} className="text-sm font-bold text-ink" />
+              <Amount value={-calc.cardUnpaid(c, today)} hideKey={HIDE_CARD} className="text-sm font-bold text-ink" />
             </span>
           )}
         />

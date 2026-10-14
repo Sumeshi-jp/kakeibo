@@ -1,5 +1,4 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
-import { useUiStore } from '../../store/uiStore'
 import type { Category } from '../../types'
 import { Amount } from '../Amount'
 import { CategoryIcon } from '../CategoryIcon'
@@ -16,10 +15,6 @@ export interface CategoryTotal {
  */
 export function CategoryBreakdown({ totals, emptyText }: { totals: CategoryTotal[]; emptyText: string }) {
   const sum = totals.reduce((s, t) => s + t.total, 0)
-  // ツールチップは各カテゴリの行と同じキーで隠す
-  const defaultHidden = useUiStore((s) => s.defaultHidden)
-  const overrides = useUiStore((s) => s.hiddenOverrides)
-  const isHidden = (key: string) => overrides[key] ?? defaultHidden
   if (sum === 0) return <p className="border-b border-hairline py-6 text-center text-sm text-slate">{emptyText}</p>
 
   const rows = totals.map((t) => ({
@@ -57,7 +52,7 @@ export function CategoryBreakdown({ totals, emptyText }: { totals: CategoryTotal
               content={({ active, payload }) =>
                 active && payload?.length ? (
                   <ChartTooltip
-                    hidden={isHidden(payload[0].payload.key)}
+                    hidden={false}
                     title={`${payload[0].payload.name}（${Math.round(payload[0].payload.share * 100)}%）`}
                     rows={[{ label: '金額', value: Number(payload[0].payload.total), color: payload[0].payload.color }]}
                   />
@@ -69,9 +64,7 @@ export function CategoryBreakdown({ totals, emptyText }: { totals: CategoryTotal
         <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
           <div>
             <p className="text-xs text-slate">合計</p>
-            <span className="pointer-events-auto">
-              <Amount value={sum} hideKey="report:category-total" className="text-lg font-bold" />
-            </span>
+            <Amount value={sum} className="text-lg font-bold" />
           </div>
         </div>
       </div>
@@ -88,7 +81,7 @@ export function CategoryBreakdown({ totals, emptyText }: { totals: CategoryTotal
                 <div className="flex items-center justify-between gap-2">
                   <span className="truncate">{r.name}</span>
                   <span className="flex shrink-0 items-center">
-                    <Amount value={r.total} hideKey={r.key} className="font-bold" />
+                    <Amount value={r.total} className="font-bold" />
                     <span className="ml-2 inline-block w-9 text-right text-xs text-slate tabular">{Math.round(r.share * 100)}%</span>
                   </span>
                 </div>

@@ -3,6 +3,7 @@ import { formatCompact } from '../../lib/money'
 import { useHidden } from '../../store/uiStore'
 import { EyeToggle } from '../EyeToggle'
 import { ChartTooltip } from './ChartTooltip'
+import { HIDE_BALANCE } from '../../lib/hideKeys'
 
 export interface MonthlyPoint {
   month: string // 'YYYY-MM'
@@ -10,13 +11,12 @@ export interface MonthlyPoint {
   expense: number
 }
 
-const HIDE_KEY = 'chart:monthly'
 const INCOME = 'var(--color-income-mark)'
 const EXPENSE = 'var(--color-expense-mark)'
 
 /** 月別の収入と支出（並べた棒）。凡例は上に置く */
 export function MonthlyBarChart({ data }: { data: MonthlyPoint[] }) {
-  const hidden = useHidden(HIDE_KEY)
+  const hidden = useHidden(HIDE_BALANCE)
   return (
     <figure>
       <figcaption className="mb-2 flex items-center gap-4 text-xs text-slate">
@@ -28,7 +28,7 @@ export function MonthlyBarChart({ data }: { data: MonthlyPoint[] }) {
           <span aria-hidden className="size-2.5 rounded-xs" style={{ background: EXPENSE }} />
           支出
         </span>
-        <EyeToggle hideKey={HIDE_KEY} className="ml-auto" />
+        <EyeToggle hideKey={HIDE_BALANCE} className="ml-auto" />
       </figcaption>
       <div className="h-56">
         <ResponsiveContainer width="100%" height="100%">

@@ -40,7 +40,6 @@ function Row({ tx, lookups }: { tx: Transaction; lookups: Lookups }) {
       </button>
       <Amount
         value={tx.type === 'transfer' ? tx.amount : signedAmount(tx)}
-        hideKey={`tx:${tx.id}`}
         sign={tx.type === 'transfer' ? 'none' : 'always'}
         tone={tx.type === 'transfer' ? 'plain' : 'auto'}
         className="font-bold"
@@ -79,7 +78,7 @@ export function TransactionList({ transactions, lookups, emptyText = '明細は�
         <section key={date}>
           <div className="flex items-baseline justify-between border-b border-ink pb-1 text-sm">
             <h3 className="font-bold">{dayHeading(date)}</h3>
-            <Amount value={txs.reduce((s, t) => s + signedAmount(t), 0)} hideKey={`day:${date}`} sign="always" tone="auto" className="text-xs" />
+            <Amount value={txs.reduce((s, t) => s + signedAmount(t), 0)} sign="always" tone="auto" className="text-xs" />
           </div>
           <ul>
             {txs.map((tx) => (

@@ -19,7 +19,6 @@ export function BudgetList({ categories, spent }: BudgetListProps) {
   const totalSpent = budgeted.reduce((s, c) => s + (spent.get(c.id) ?? 0), 0)
 
   const row = (key: string, label: ReactNode, used: number, budget: number, color: string) => {
-    const hideKey = `budget:${key}`
     const over = used > budget
     const ratio = Math.min(used / budget, 1)
     return (
@@ -27,9 +26,9 @@ export function BudgetList({ categories, spent }: BudgetListProps) {
         <div className="flex items-center gap-2 text-sm">
           <span className="flex min-w-0 flex-1 items-center gap-2">{label}</span>
           <span className="flex shrink-0 items-center tabular">
-            <Amount value={used} hideKey={hideKey} eye={false} className="font-bold" />
+            <Amount value={used} className="font-bold" />
             <span className="px-1 text-slate">/</span>
-            <Amount value={budget} hideKey={hideKey} className="text-slate" />
+            <Amount value={budget} className="text-slate" />
           </span>
         </div>
         <div className="mt-1.5 h-1.5 bg-soft" role="presentation">
@@ -38,11 +37,11 @@ export function BudgetList({ categories, spent }: BudgetListProps) {
         <p className={`mt-1 text-right text-xs ${over ? 'font-bold text-expense' : 'text-slate'}`}>
           {over ? (
             <>
-              <Amount value={used - budget} hideKey={hideKey} eye={false} /> 超過
+              <Amount value={used - budget} /> 超過
             </>
           ) : (
             <>
-              残り <Amount value={budget - used} hideKey={hideKey} eye={false} />
+              残り <Amount value={budget - used} />
             </>
           )}
         </p>

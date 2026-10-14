@@ -103,7 +103,7 @@ export default function SettingsPage() {
             )
           }}
           renderAside={(r) => (
-            <Amount value={r.type === 'expense' ? -r.amount : r.amount} hideKey={`rec:${r.id}`} sign="always" tone="auto" className="text-sm font-bold" />
+            <Amount value={r.type === 'expense' ? -r.amount : r.amount} sign="always" tone="auto" className="text-sm font-bold" />
           )}
         />
       </section>

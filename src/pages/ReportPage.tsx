@@ -2,7 +2,6 @@ import { ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { Amount } from '../components/Amount'
 import { BudgetList } from '../components/BudgetList'
-import { EyeToggle } from '../components/EyeToggle'
 import { CategoryBreakdown } from '../components/charts/CategoryBreakdown'
 import { MonthlyBarChart, type MonthlyPoint } from '../components/charts/MonthlyBarChart'
 import { Segmented } from '../components/fields'
@@ -14,6 +13,7 @@ import { shiftMonth } from '../lib/dates'
 import { totals, totalsByCategory } from '../lib/summary'
 import { useUiStore } from '../store/uiStore'
 import type { CategoryType } from '../types'
+import { HIDE_BALANCE } from '../lib/hideKeys'
 
 export default function ReportPage() {
   const month = useUiStore((s) => s.month)
@@ -82,19 +82,15 @@ export default function ReportPage() {
                   <th className="py-1.5 text-right font-normal">収入</th>
                   <th className="py-1.5 text-right font-normal">支出</th>
                   <th className="py-1.5 text-right font-normal">収支</th>
-                  <th className="w-8">
-                    <span className="sr-only">表示</span>
-                  </th>
                 </tr>
               </thead>
               <tbody>
                 {[...series].reverse().map((p) => (
                   <tr key={p.month} className="border-b border-hairline">
                     <td className="py-2 tabular">{p.month.replace('-', '/')}</td>
-                    <td className="py-2 text-right"><Amount value={p.income} hideKey={`report:month:${p.month}`} eye={false} /></td>
-                    <td className="py-2 text-right"><Amount value={p.expense} hideKey={`report:month:${p.month}`} eye={false} /></td>
-                    <td className="py-2 text-right"><Amount value={p.income - p.expense} hideKey={`report:month:${p.month}`} eye={false} sign="always" tone="auto" /></td>
-                    <td className="py-2 text-right"><EyeToggle hideKey={`report:month:${p.month}`} /></td>
+                    <td className="py-2 text-right"><Amount value={p.income} hideKey={HIDE_BALANCE} eye={false} /></td>
+                    <td className="py-2 text-right"><Amount value={p.expense} hideKey={HIDE_BALANCE} eye={false} /></td>
+                    <td className="py-2 text-right"><Amount value={p.income - p.expense} hideKey={HIDE_BALANCE} eye={false} sign="always" tone="auto" /></td>
                   </tr>
                 ))}
               </tbody>
