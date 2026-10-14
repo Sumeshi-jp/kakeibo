@@ -1,5 +1,9 @@
 import { ChevronDown } from 'lucide-react'
+import { useState } from 'react'
 import type { ReactNode, SelectHTMLAttributes } from 'react'
+import { parseYenInput } from '../lib/money'
+
+const yenFormat = new Intl.NumberFormat('ja-JP')
 
 const fieldFrame = 'w-full rounded-xl border border-slate bg-canvas px-4 outline-none focus:border-ink focus:ring-1 focus:ring-ink'
 const fieldBox = `${fieldFrame} h-11 text-base`
@@ -60,7 +64,12 @@ export function Segmented<T extends string>({ label, value, options, onChange }:
   )
 }
 
-/** 金額をカンマ付きで入力する欄。value は円の整数 */
+/**
+ * 金額の入力欄。value は円の整数。
+ * 入力中は打った文字をそのまま表示し（カンマを足すなどの書き換えをしない）、欄を離れたらカンマ区切りにする。
+ * 入力中に書き換えると、iPhone のキーボード（特に日本語入力の確定前）と取り合いになり、
+ * 同じ数字が連続で入ったりカーソルが飛んだりするため。
+ */
 export function YenInput({
   label,
   value,
@@ -77,25 +86,31 @@ export function YenInput({
   autoFocus?: boolean
 }) {
   const id = `yen-${label}`
-  const text = value === 0 ? '' : new Intl.NumberFormat('ja-JP').format(value)
+  // 入力中だけ使う、打ったままの文字列（null のときは value をカンマ区切りで表示）
+  const [draft, setDraft] = useState<string | null>(null)
+  const display = draft ?? (value === 0 ? '' : yenFormat.format(value))
+
   return (
     <FieldLabel label={label} htmlFor={id}>
       <div className="relative">
         <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-slate">¥</span>
         <input
           id={id}
+          type="text"
           inputMode={allowNegative ? 'text' : 'numeric'}
+          enterKeyHint="done"
           data-autofocus={autoFocus || undefined}
           autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
           placeholder="0"
-          value={text}
+          value={display}
+          onFocus={() => setDraft(value === 0 ? '' : String(value))}
           onChange={(e) => {
-            const raw = e.target.value.replace(/[,，\s]/g, '').replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
-            const neg = allowNegative && /^[-−ー]/.test(raw)
-            const digits = raw.replace(/\D/g, '')
-            const n = digits ? Number(digits) : 0
-            onChange(neg ? -n : n)
+            setDraft(e.target.value)
+            onChange(parseYenInput(e.target.value, allowNegative))
           }}
+          onBlur={() => setDraft(null)}
           className={`${fieldFrame} tabular pl-9 text-right ${size === 'lg' ? 'h-14 text-3xl font-bold' : 'h-11 text-base'}`}
         />
       </div>

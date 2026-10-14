@@ -23,3 +23,15 @@ export function formatCompact(value: number, hidden = false): string {
   if (hidden) return '•••'
   return Math.abs(value) < 10000 ? new Intl.NumberFormat('ja-JP').format(value) : compact.format(value)
 }
+
+/**
+ * 金額欄に入力された文字列を円の整数にする。
+ * 全角数字・カンマ・空白・「円」「¥」を許し、桁数が多すぎるものは 10 桁で打ち切る。
+ */
+export function parseYenInput(raw: string, allowNegative = false): number {
+  const half = raw.replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+  const negative = allowNegative && /^\s*[-−ー－]/.test(half)
+  const digits = half.replace(/\D/g, '').replace(/^0+(?=\d)/, '').slice(0, 10)
+  const n = digits ? Number(digits) : 0
+  return negative ? -n : n
+}
