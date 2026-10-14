@@ -25,13 +25,18 @@ const placeholderSvg = (size) => `
 /** 正方形に切り抜いた元画像（size×size） */
 async function base(size) {
   if (existsSync(SOURCE)) {
-    return sharp(SOURCE).resize(size, size, { fit: 'cover', position: 'centre' }).png().toBuffer()
+    // iOS のホーム画面アイコンは透過できないので、透明部分は白で埋める
+    return sharp(SOURCE).flatten({ background: '#ffffff' }).resize(size, size, { fit: 'cover', position: 'centre' }).png().toBuffer()
   }
   return sharp(Buffer.from(placeholderSvg(size))).png().toBuffer()
 }
 
-/** maskable 用：端末によって丸や角丸に切り抜かれるので、内側 80% に収める */
+/**
+ * maskable 用：端末によって丸や角丸に切り抜かれるので、内側 80% に収める。
+ * 元画像を使う場合は、元画像の余白が十分（文字が中央 60% 程度に収まっている）なのでそのまま使う。
+ */
 async function maskable(size) {
+  if (existsSync(SOURCE)) return base(size)
   const inner = Math.round(size * 0.8)
   const img = await base(inner)
   const { data } = await sharp(img).resize(1, 1).raw().toBuffer({ resolveWithObject: true })
