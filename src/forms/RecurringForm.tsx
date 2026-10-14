@@ -14,14 +14,16 @@ import { FormActions } from './FormActions'
 
 interface RecurringFormProps {
   rule?: RecurringRule
+  /** 新規作成時の種類 */
+  defaultType?: 'expense' | 'income'
   lookups: Lookups
   siblings: RecurringRule[]
   onDone: () => void
 }
 
-export function RecurringForm({ rule, lookups, siblings, onDone }: RecurringFormProps) {
+export function RecurringForm({ rule, defaultType = 'expense', lookups, siblings, onDone }: RecurringFormProps) {
   const uid = useUid()
-  const [type, setType] = useState<'expense' | 'income'>(rule?.type ?? 'expense')
+  const [type, setType] = useState<'expense' | 'income'>(rule?.type ?? defaultType)
   const [amount, setAmount] = useState(rule?.amount ?? 0)
   const [categoryId, setCategoryId] = useState(rule?.categoryId ?? '')
   const [source, setSource] = useState(encodeSource(rule?.source))

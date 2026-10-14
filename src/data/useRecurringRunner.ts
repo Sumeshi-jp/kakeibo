@@ -20,6 +20,6 @@ export function useRecurringRunner() {
       count += due.length
       generateRecurring(uid, rule, due, today)
     }
-    if (count > 0) useUiStore.getState().showToast(`定期取引を${count}件登録しました`)
+    if (count > 0) useUiStore.getState().showToast(`定期収支を${count}件登録しました`)
   }, [uid, rules, loading])
 }

@@ -6,14 +6,16 @@ import { CategoryIcon } from '../components/CategoryIcon'
 import { Segmented, SelectField, YenInput } from '../components/fields'
 import { PillButton } from '../components/PillButton'
 import { TextInput } from '../components/TextInput'
-import { createTransaction, deleteTransaction, updateTransaction } from '../data/mutations'
+import { useRecurring } from '../data/hooks'
+import { createItem, createTransaction, deleteTransaction, nextOrder, updateTransaction } from '../data/mutations'
+import { frequencyLabel } from '../lib/recurring'
 import type { Lookups } from '../data/useLookups'
 import { SourceOptions } from '../components/SourceOptions'
 import { decodeSource as decode, encodeSource as encode } from '../lib/sourceRef'
 import type { ReceiptGuess } from '../lib/receipt'
 import { useUiStore } from '../store/uiStore'
 import { QuickCategoryAdd } from './QuickCategoryAdd'
-import type { MoneyRef, NewTransaction, Transaction, TransactionType } from '../types'
+import type { MoneyRef, NewTransaction, RecurringFrequency, Transaction, TransactionType } from '../types'
 
 interface TransactionFormProps {
   tx?: Transaction
@@ -93,6 +95,9 @@ export function TransactionForm({ tx, defaultDate, lookups, onDone }: Transactio
   const [to, setTo] = useState(() => encode(tx?.to))
   const [memo, setMemo] = useState(tx?.memo ?? '')
   const [confirmDelete, setConfirmDelete] = useState(false)
+  // 新規入力のときだけ、同じ内容を定期収支として登録できる
+  const [repeat, setRepeat] = useState<'none' | RecurringFrequency>('none')
+  const { data: rules } = useRecurring()
 
   const categories = lookups.categories.filter((c) => c.type === type && (!c.archived || c.id === tx?.categoryId))
   const sourceRef = decode(source)
@@ -125,7 +130,25 @@ export function TransactionForm({ tx, defaultDate, lookups, onDone }: Transactio
       recurringId: tx?.recurringId,
     }
     if (tx) updateTransaction(uid, tx.id, data)
-    else createTransaction(uid, data)
+    else if (repeat !== 'none' && type !== 'transfer' && categoryId) {
+      // 定期収支のルールを作り、今回の明細はその1回目として登録する（作成済みの日付を今回の日付にして二重登録を防ぐ）
+      const ruleId = createItem(uid, 'recurring', {
+        type,
+        amount,
+        categoryId,
+        source: sourceRef,
+        memo: memo.trim(),
+        frequency: repeat,
+        day: Number(date.slice(8)),
+        month: repeat === 'yearly' ? Number(date.slice(5, 7)) : null,
+        startDate: date,
+        endDate: null,
+        lastGeneratedDate: date,
+        order: nextOrder(rules),
+        archived: false,
+      })
+      createTransaction(uid, { ...data, recurringId: ruleId })
+    } else createTransaction(uid, data)
     setLastSource(sourceRef)
     onDone()
   }
@@ -202,6 +225,27 @@ export function TransactionForm({ tx, defaultDate, lookups, onDone }: Transactio
       )}
 
       <TextInput label="日付" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+
+      {!tx && type !== 'transfer' && (
+        <div>
+          <Segmented
+            label="くり返し"
+            value={repeat}
+            onChange={setRepeat}
+            options={[
+              { value: 'none', label: 'なし' },
+              { value: 'monthly', label: '毎月' },
+              { value: 'yearly', label: '毎年' },
+            ]}
+          />
+          {repeat !== 'none' && (
+            <p className="mt-1 text-xs text-slate">
+              {frequencyLabel({ frequency: repeat, day: Number(date.slice(8)) || 1, month: Number(date.slice(5, 7)) || 1 })}
+              に同じ内容を自動で登録します（設定の「定期収支」で変更・停止できます）
+            </p>
+          )}
+        </div>
+      )}
       <TextInput label="メモ" placeholder="任意" value={memo} onChange={(e) => setMemo(e.target.value)} />
 
       <div className="flex flex-col gap-3 border-t border-hairline pt-4">

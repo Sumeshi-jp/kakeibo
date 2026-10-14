@@ -20,10 +20,15 @@ import { PinSettings } from '../lock/PinSettings'
 import { useUiStore } from '../store/uiStore'
 import type { Category, CategoryType, RecurringRule } from '../types'
 
-function AddButton({ onClick }: { onClick: () => void }) {
+/** 一覧の下に置く「＋ ○○を追加」ボタン */
+function AddRowButton({ label, onClick }: { label: string; onClick: () => void }) {
   return (
-    <button type="button" onClick={onClick} className="flex min-h-11 items-center gap-1 px-1 text-sm font-bold text-ink">
-      <Plus size={16} /> 追加
+    <button
+      type="button"
+      onClick={onClick}
+      className="mt-3 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-silver text-sm text-charcoal hover:bg-soft"
+    >
+      <Plus size={16} /> {label}
     </button>
   )
 }
@@ -34,7 +39,7 @@ export default function SettingsPage() {
   const { data: categories } = useCategories()
   const [type, setType] = useState<CategoryType>('expense')
   const [editing, setEditing] = useState<{ category?: Category } | null>(null)
-  const [editingRule, setEditingRule] = useState<{ rule?: RecurringRule } | null>(null)
+  const [editingRule, setEditingRule] = useState<{ rule?: RecurringRule; type?: 'expense' | 'income' } | null>(null)
   const { data: rules } = useRecurring()
   const lookups = useLookups()
   const theme = useUiStore((s) => s.theme)
@@ -48,11 +53,7 @@ export default function SettingsPage() {
   return (
     <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
       <section>
-        <SectionEyebrow
-          aside={<AddButton onClick={() => setEditing({})} />}
-        >
-          カテゴリ
-        </SectionEyebrow>
+        <SectionEyebrow>カテゴリ</SectionEyebrow>
         <div className="mb-3">
           <Segmented
             label="種類"
@@ -79,14 +80,15 @@ export default function SettingsPage() {
             </>
           )}
         />
+        <AddRowButton label={`${label}のカテゴリを追加`} onClick={() => setEditing({})} />
       </section>
 
       <div className="flex flex-col gap-10">
       <section>
-        <SectionEyebrow aside={<AddButton onClick={() => setEditingRule({})} />}>定期取引</SectionEyebrow>
+        <SectionEyebrow>定期収支</SectionEyebrow>
         <ManagedList
           items={rules}
-          emptyText="家賃やサブスク、給料などを登録すると自動で明細になります"
+          emptyText="給料や家賃、サブスクなどを登録すると、毎月（毎年）自動で明細になります"
           onSelect={(rule) => setEditingRule({ rule })}
           onMove={(i, d) => {
             const ids = rules.filter((r) => !r.archived).map((r) => r.id)
@@ -110,6 +112,10 @@ export default function SettingsPage() {
             <Amount value={r.type === 'expense' ? -r.amount : r.amount} sign="always" tone="auto" className="text-sm font-bold" />
           )}
         />
+        <div className="grid grid-cols-2 gap-2">
+          <AddRowButton label="定期の収入を追加" onClick={() => setEditingRule({ type: 'income' })} />
+          <AddRowButton label="定期の支出を追加" onClick={() => setEditingRule({ type: 'expense' })} />
+        </div>
       </section>
 
       <section>
@@ -177,11 +183,12 @@ export default function SettingsPage() {
       </section>
       </div>
 
-      <BottomSheet open={editingRule !== null} title={editingRule?.rule ? '定期取引を編集' : '定期取引を追加'} onClose={() => setEditingRule(null)}>
+      <BottomSheet open={editingRule !== null} title={editingRule?.rule ? '定期収支を編集' : editingRule?.type === 'income' ? '定期の収入を追加' : '定期の支出を追加'} onClose={() => setEditingRule(null)}>
         {editingRule && (
           <RecurringForm
-            key={editingRule.rule?.id ?? 'new'}
+            key={editingRule.rule?.id ?? `new-${editingRule.type}`}
             rule={editingRule.rule}
+            defaultType={editingRule.type}
             lookups={lookups}
             siblings={rules}
             onDone={() => setEditingRule(null)}
