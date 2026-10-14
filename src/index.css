@@ -16,6 +16,15 @@
     line-height: 1.5;
   }
 
+  /* iPhone でボタンを素早く押したときに「ダブルタップで拡大」と判定されて押下が失われるのを防ぐ */
+  button,
+  a,
+  input,
+  select,
+  label {
+    touch-action: manipulation;
+  }
+
   :focus-visible {
     outline: 2px solid var(--color-ink);
     outline-offset: 2px;

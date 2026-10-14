@@ -50,7 +50,7 @@ export function PinPad({ length, onComplete, disabled = false }: PinPadProps) {
   })
 
   return (
-    <div className="flex flex-col items-center gap-8">
+    <div className="flex flex-col items-center gap-8 select-none">
       <div className={`flex gap-4 ${shake ? 'animate-[shake_0.4s]' : ''}`} aria-label={`${pin.length}桁入力済み`} role="status">
         {Array.from({ length }, (_, i) => (
           <span key={i} className={`size-3.5 rounded-full border-2 border-ink ${i < pin.length ? 'bg-ink' : ''}`} />
