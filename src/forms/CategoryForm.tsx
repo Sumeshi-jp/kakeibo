@@ -2,6 +2,7 @@ import { Check } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useUid } from '../auth/useAuth'
 import { CategoryIcon } from '../components/CategoryIcon'
+import { YenInput } from '../components/fields'
 import { TextInput } from '../components/TextInput'
 import { createItem, nextOrder, updateItem } from '../data/mutations'
 import { CATEGORY_COLORS, CATEGORY_ICONS } from '../lib/categoryIcons'
@@ -20,13 +21,14 @@ export function CategoryForm({ category, type, siblings, onDone }: CategoryFormP
   const [name, setName] = useState(category?.name ?? '')
   const [icon, setIcon] = useState(category?.icon ?? 'ellipsis')
   const [color, setColor] = useState(category?.color ?? CATEGORY_COLORS[0])
+  const [budget, setBudget] = useState(category?.budget ?? 0)
 
   const canSave = name.trim() !== ''
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
     if (!canSave) return
-    const data = { name: name.trim(), icon, color }
+    const data = { name: name.trim(), icon, color, budget: type === 'expense' && budget > 0 ? budget : null }
     if (category) updateItem(uid, 'categories', category.id, data)
     else createItem(uid, 'categories', { ...data, type, order: nextOrder(siblings), archived: false })
     onDone()
@@ -40,6 +42,13 @@ export function CategoryForm({ category, type, siblings, onDone }: CategoryFormP
           <TextInput label="名前" value={name} onChange={(e) => setName(e.target.value)} autoFocus={!category} />
         </div>
       </div>
+
+      {type === 'expense' && (
+        <div>
+          <YenInput label="月の予算（任意）" value={budget} onChange={setBudget} />
+          <p className="mt-1 text-xs text-slate">設定すると、レポート画面で使った割合を確認できます。</p>
+        </div>
+      )}
 
       <fieldset>
         <legend className="mb-2 text-sm text-slate">色</legend>

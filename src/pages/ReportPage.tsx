@@ -1,6 +1,7 @@
 import { ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { Amount } from '../components/Amount'
+import { BudgetList } from '../components/BudgetList'
 import { CategoryBreakdown } from '../components/charts/CategoryBreakdown'
 import { MonthlyBarChart, type MonthlyPoint } from '../components/charts/MonthlyBarChart'
 import { Segmented } from '../components/fields'
@@ -50,6 +51,14 @@ export default function ReportPage() {
             />
           </div>
           <CategoryBreakdown totals={byCategory} emptyText={`この月の${type === 'expense' ? '支出' : '収入'}はまだありません`} />
+        </section>
+
+        <section>
+          <SectionEyebrow>予算</SectionEyebrow>
+          <BudgetList
+            categories={lookups.categories}
+            spent={new Map(totalsByCategory(monthTxs, 'expense').map((t) => [t.categoryId, t.total]))}
+          />
         </section>
 
         <section>

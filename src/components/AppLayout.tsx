@@ -2,9 +2,11 @@ import { Eye, EyeOff, Settings } from 'lucide-react'
 import { Suspense, useEffect } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useLookups } from '../data/useLookups'
+import { useRecurringRunner } from '../data/useRecurringRunner'
 import { TransactionForm } from '../forms/TransactionForm'
 import { useUiStore } from '../store/uiStore'
 import { BottomSheet } from './BottomSheet'
+import { OfflineBanner } from './OfflineBanner'
 import { SideNav } from './SideNav'
 import { TabBar } from './TabBar'
 import { Toast } from './Toast'
@@ -42,12 +44,14 @@ export function AppLayout() {
   const closeEntry = useUiStore((s) => s.closeEntry)
   // 口座・カテゴリをここで購読しておき、入力シートを開いたときにすぐ使えるようにする
   const lookups = useLookups()
+  useRecurringRunner()
 
   return (
     <div className="flex min-h-dvh">
       <SideNav />
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="pt-safe sticky top-0 z-10 border-b border-ink bg-canvas">
+          <OfflineBanner />
           <div className="mx-auto flex h-14 max-w-5xl items-center gap-1 px-4">
             <h1 className="flex-1 text-xl font-bold">{title}</h1>
             <HideAmountsToggle />

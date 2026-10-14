@@ -36,6 +36,8 @@ export interface Category {
   /** lucide のアイコン名 */
   icon: string
   color: string
+  /** 月の予算（支出カテゴリのみ。未設定は null） */
+  budget?: number | null
   order: number
   archived: boolean
 }
@@ -65,3 +67,26 @@ export interface Transaction {
 
 /** 新規作成時に渡す形（id はFirestoreが決める） */
 export type NewTransaction = Omit<Transaction, 'id'>
+
+export type RecurringFrequency = 'monthly' | 'yearly'
+
+/** 定期取引のルール。アプリを開いたときに、発生日を過ぎた分の明細を自動で作る */
+export interface RecurringRule {
+  id: string
+  type: 'expense' | 'income'
+  amount: number
+  categoryId: string
+  source: MoneyRef
+  memo: string
+  frequency: RecurringFrequency
+  /** 毎月（毎年）何日か。31 は月末扱い */
+  day: number
+  /** 毎年の場合の月（1-12） */
+  month?: number | null
+  startDate: string
+  endDate?: string | null
+  /** ここまでの明細は作成済み（'YYYY-MM-DD'） */
+  lastGeneratedDate?: string
+  archived: boolean
+  order: number
+}

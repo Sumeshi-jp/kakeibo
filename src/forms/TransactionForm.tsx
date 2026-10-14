@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
-import { ArrowDown, Trash2 } from 'lucide-react'
-import { useState, type FormEvent } from 'react'
+import { ArrowDown, Camera, Trash2 } from 'lucide-react'
+import { useRef, useState, type FormEvent } from 'react'
 import { useUid } from '../auth/useAuth'
 import { CategoryIcon } from '../components/CategoryIcon'
 import { Segmented, SelectField, YenInput } from '../components/fields'
@@ -8,8 +8,11 @@ import { PillButton } from '../components/PillButton'
 import { TextInput } from '../components/TextInput'
 import { createTransaction, deleteTransaction, updateTransaction } from '../data/mutations'
 import type { Lookups } from '../data/useLookups'
+import { SourceOptions } from '../components/SourceOptions'
+import { decodeSource as decode, encodeSource as encode } from '../lib/sourceRef'
+import type { ReceiptGuess } from '../lib/receipt'
 import { useUiStore } from '../store/uiStore'
-import type { AccountKind, MoneyRef, NewTransaction, Transaction, TransactionType } from '../types'
+import type { MoneyRef, NewTransaction, Transaction, TransactionType } from '../types'
 
 interface TransactionFormProps {
   tx?: Transaction
@@ -18,47 +21,50 @@ interface TransactionFormProps {
   onDone: () => void
 }
 
-const encode = (ref: MoneyRef | undefined) => (ref ? `${ref.kind}:${ref.id}` : '')
-const decode = (v: string): MoneyRef | undefined => {
-  const [kind, id] = v.split(':')
-  return kind && id ? { kind: kind as MoneyRef['kind'], id } : undefined
-}
 
-/** 口座・カードの選択肢。allowCard=false のときは現金と銀行だけ */
-function SourceOptions({ lookups, allowCard, current }: { lookups: Lookups; allowCard: boolean; current?: string }) {
-  // アーカイブ済みでも、編集中の明細が使っているものは選択肢に残す
-  const visible = <T extends { id: string; archived: boolean }>(xs: T[], kind: string) =>
-    xs.filter((x) => !x.archived || `${kind}:${x.id}` === current)
-  const group = (kind: AccountKind) => visible(lookups.accounts.filter((a) => a.kind === kind), kind)
+/** レシートを撮影・選択して、合計金額と日付を読み取る */
+function ReceiptButton({ onRead }: { onRead: (guess: ReceiptGuess) => void }) {
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [status, setStatus] = useState<string | null>(null)
+
+  const handleFile = async (file: File | undefined) => {
+    if (!file) return
+    setStatus('準備中…')
+    try {
+      const { readReceipt } = await import('../lib/ocr')
+      const guess = await readReceipt(file, (r) => setStatus(`読み取り中… ${Math.round(r * 100)}%`))
+      onRead(guess)
+      setStatus(
+        guess.amount || guess.date
+          ? `読み取りました（${[guess.amount && '金額', guess.date && '日付'].filter(Boolean).join('・')}）。違っていたら直してください`
+          : '読み取れませんでした。手で入力してください',
+      )
+    } catch (e) {
+      console.error(e)
+      setStatus('読み取りに失敗しました。通信状態を確認してください')
+    } finally {
+      if (fileRef.current) fileRef.current.value = ''
+    }
+  }
+
+  const busy = status?.startsWith('準備') || status?.startsWith('読み取り中')
   return (
-    <>
-      <option value="" disabled>
-        選んでください
-      </option>
-      <optgroup label="現金">
-        {group('cash').map((a) => (
-          <option key={a.id} value={`cash:${a.id}`}>
-            {a.name}
-          </option>
-        ))}
-      </optgroup>
-      <optgroup label="銀行">
-        {group('bank').map((a) => (
-          <option key={a.id} value={`bank:${a.id}`}>
-            {a.name}
-          </option>
-        ))}
-      </optgroup>
-      {allowCard && (
-        <optgroup label="クレカ">
-          {visible(lookups.cards, 'card').map((c) => (
-            <option key={c.id} value={`card:${c.id}`}>
-              {c.name}
-            </option>
-          ))}
-        </optgroup>
+    <div className="-mt-2">
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFile(e.target.files?.[0])} />
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => fileRef.current?.click()}
+        className="flex min-h-11 items-center gap-2 text-sm text-ink disabled:opacity-50"
+      >
+        <Camera size={18} /> レシートを読み取る
+      </button>
+      {status && (
+        <p role="status" className="text-xs text-slate">
+          {status}
+        </p>
       )}
-    </>
+    </div>
   )
 }
 
@@ -141,6 +147,15 @@ export function TransactionForm({ tx, defaultDate, lookups, onDone }: Transactio
       />
 
       <YenInput label="金額" value={amount} onChange={setAmount} size="lg" autoFocus={!tx} />
+
+      {!tx && (
+        <ReceiptButton
+          onRead={(guess) => {
+            if (guess.amount) setAmount(guess.amount)
+            if (guess.date) setDate(guess.date)
+          }}
+        />
+      )}
 
       {type !== 'transfer' && (
         <fieldset>

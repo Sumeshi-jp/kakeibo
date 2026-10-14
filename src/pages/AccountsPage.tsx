@@ -11,6 +11,7 @@ import { todayString } from '../lib/dates'
 import { moved, reorderItems } from '../data/mutations'
 import { AccountForm } from '../forms/AccountForm'
 import { CardForm } from '../forms/CardForm'
+import { CardStatements } from '../forms/CardStatements'
 import { dayLabel, monthOffsetLabel } from '../lib/days'
 import { shiftMonth } from '../lib/dates'
 import type { Account, AccountKind, Card } from '../types'
@@ -139,6 +140,9 @@ export default function AccountsPage() {
             siblings={cards}
             onDone={() => setEditing(null)}
           />
+        )}
+        {editing?.type === 'card' && editing.card && (
+          <CardStatements statements={calc.statements.filter((st) => st.cardId === editing.card!.id)} today={today} />
         )}
       </BottomSheet>
     </div>

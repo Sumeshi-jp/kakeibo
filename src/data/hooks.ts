@@ -1,6 +1,6 @@
 import { orderBy, query, where } from 'firebase/firestore'
 import { useUid } from '../auth/useAuth'
-import type { Account, Card, Category, Transaction } from '../types'
+import type { Account, Card, Category, RecurringRule, Transaction } from '../types'
 import { DEMO } from './demo'
 import { userCol, type CollectionName } from './paths'
 import { useCollection, type CollectionState } from './useCollection'
@@ -9,7 +9,7 @@ import { useDemoCollection } from './useDemoCollection'
 /** 取得条件。order 順、または date 順（範囲指定つき） */
 interface Spec {
   name: CollectionName
-  sort: 'order' | 'date-asc' | 'date-desc'
+  sort: 'order' | 'date-asc' | 'date-desc' | 'none'
   /** date の範囲（両端を含む、'YYYY-MM-DD'） */
   range?: [string, string]
 }
@@ -19,6 +19,7 @@ function useFirestoreSpec<T extends { id: string }>(spec: Spec): CollectionState
   const { name, sort, range } = spec
   return useCollection<T>(() => {
     const col = userCol(uid, name)
+    if (sort === 'none') return query(col)
     if (sort === 'order') return query(col, orderBy('order'))
     const dir = sort === 'date-desc' ? 'desc' : 'asc'
     return range
@@ -34,6 +35,7 @@ function useDemoSpec<T extends { id: string }>(spec: Spec): CollectionState<T> {
   return useDemoCollection<T>(name, (xs) => {
     const rows = xs as unknown as Row[]
     const filtered = range ? rows.filter((x) => x.date! >= range[0] && x.date! <= range[1]) : [...rows]
+    if (sort === 'none') return filtered as unknown as T[]
     if (sort === 'order') filtered.sort((a, b) => a.order! - b.order!)
     else filtered.sort((a, b) => (sort === 'date-asc' ? 1 : -1) * a.date!.localeCompare(b.date!))
     return filtered as unknown as T[]
@@ -56,3 +58,15 @@ export const useTransactions = (month: string) => useTransactionsInRange(`${mont
 
 /** 残高・資産推移の計算用に全期間の取引を取得する（オフラインキャッシュから読まれることが多い） */
 export const useAllTransactions = () => useSpec<Transaction>({ name: 'transactions', sort: 'date-asc' })
+
+export const useRecurring = () => useSpec<RecurringRule>({ name: 'recurring', sort: 'order' })
+
+export interface CardStatementOverride {
+  /** '{cardId}_{YYYY-MM}' */
+  id: string
+  cardId: string
+  billingMonth: string
+  overrideAmount: number
+}
+
+export const useCardStatementOverrides = () => useSpec<CardStatementOverride>({ name: 'cardStatements', sort: 'none' })

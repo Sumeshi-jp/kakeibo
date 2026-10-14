@@ -1,7 +1,7 @@
 import { deleteDoc, deleteField, doc, serverTimestamp, setDoc, updateDoc, writeBatch, type DocumentData } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useUiStore } from '../store/uiStore'
-import type { NewTransaction } from '../types'
+import type { NewTransaction, RecurringRule } from '../types'
 import { DEMO, demoStore } from './demo'
 import { userCol, userDoc, type CollectionName } from './paths'
 
@@ -77,4 +77,34 @@ export function deleteTransaction(uid: string, id: string) {
 /** Firestore は undefined を保存できないため取り除く */
 function stripUndefined<T extends object>(obj: T): T {
   return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined)) as T
+}
+
+/** 定期取引の発生分をまとめて登録し、作成済みの日付を進める（id 固定なので二重登録にならない） */
+export function generateRecurring(uid: string, rule: RecurringRule, due: { id: string; tx: NewTransaction }[], today: string) {
+  if (due.length === 0) return
+  if (DEMO) {
+    due.forEach(({ id, tx }) => demoStore.set('transactions', id, stripUndefined(tx)))
+    demoStore.update('recurring', rule.id, { lastGeneratedDate: today })
+    return
+  }
+  const batch = writeBatch(db)
+  for (const { id, tx } of due) {
+    batch.set(userDoc(uid, 'transactions', id), { ...stripUndefined(tx), createdAt: serverTimestamp(), updatedAt: serverTimestamp() })
+  }
+  batch.update(userDoc(uid, 'recurring', rule.id), { lastGeneratedDate: today })
+  track(batch.commit())
+}
+
+/** クレカの請求額を補正する。key は '{cardId}_{YYYY-MM}' */
+export function setStatementOverride(uid: string, cardId: string, billingMonth: string, overrideAmount: number) {
+  const id = `${cardId}_${billingMonth}`
+  const data = { cardId, billingMonth, overrideAmount }
+  if (DEMO) return demoStore.set('cardStatements', id, data)
+  track(setDoc(userDoc(uid, 'cardStatements', id), data))
+}
+
+export function clearStatementOverride(uid: string, cardId: string, billingMonth: string) {
+  const id = `${cardId}_${billingMonth}`
+  if (DEMO) return demoStore.remove('cardStatements', id)
+  track(deleteDoc(userDoc(uid, 'cardStatements', id)))
 }
