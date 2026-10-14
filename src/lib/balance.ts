@@ -1,4 +1,4 @@
-import { addMonths, endOfMonth, format, parseISO } from 'date-fns'
+import { addDays, addMonths, endOfMonth, format, parseISO } from 'date-fns'
 import type { Account, Card, Transaction } from '../types'
 import { buildStatements, type CardStatement } from './cardBilling'
 
@@ -103,10 +103,12 @@ export function createAssetCalculator(accounts: Account[], cards: Card[], transa
 
   /**
    * asOf 時点の口座残高。
-   * 初期残高は「基準日の時点（その日の収支を記録する前）」の残高とみなし、基準日以降の増減を足す。
+   * 初期残高は「基準日の時点（その日の収支を記録する前）」の残高とみなす。
+   * - 基準日以降：初期残高に、基準日から asOf までの増減を足す
+   * - 基準日より前：初期残高から、asOf の翌日から基準日の前日までの増減を差し引く（さかのぼって求める）
+   * どちらも「初期残高 + asOf までの累計 − 基準日前日までの累計」で表せる。
    */
   const accountBalance = (account: Account, asOf: string): number => {
-    if (asOf < account.initialDate) return 0
     const sums = accountSums.get(account.id)
     return account.initialBalance + (sums ? sums.upTo(asOf) - sums.before(account.initialDate) : 0)
   }
@@ -143,6 +145,12 @@ export function createAssetCalculator(accounts: Account[], cards: Card[], transa
     cardUnpaid,
     /** asOf より後に引き落とされる請求（直近順） */
     upcoming: (asOf: string) => statements.filter((s) => s.withdrawalDate > asOf && s.amount !== 0),
+    /** 日ごとの資産推移（from〜asOf） */
+    daily: (from: string, asOf: string): AssetSnapshot[] => {
+      const out: AssetSnapshot[] = []
+      for (let d = parseISO(from); format(d, 'yyyy-MM-dd') <= asOf; d = addDays(d, 1)) out.push(snapshot(format(d, 'yyyy-MM-dd')))
+      return out
+    },
     /** 月末ごとの資産推移。最後の月は asOf（今日）時点 */
     monthly: (fromMonth: string, asOf: string): AssetSnapshot[] => {
       const out: AssetSnapshot[] = []

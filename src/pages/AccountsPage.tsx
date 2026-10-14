@@ -1,4 +1,5 @@
 import { Banknote, CreditCard, Landmark, Plus } from 'lucide-react'
+import { differenceInCalendarDays, parseISO } from 'date-fns'
 import { useState } from 'react'
 import { useUid } from '../auth/useAuth'
 import { Amount } from '../components/Amount'
@@ -33,14 +34,18 @@ function AddButton({ label, onClick }: { label: string; onClick: () => void }) {
 
 export default function AccountsPage() {
   const uid = useUid()
-  const { accounts, cards, calc } = useAssets()
+  const { accounts, cards, transactions, calc } = useAssets()
   const [editing, setEditing] = useState<Editing>(null)
   const today = todayString()
   const assets = calc.snapshot(today)
-  // 口座の基準日のうち最も古い月から今月まで（基準日より前の残高はわからないので含めない）。長すぎる場合は直近24か月
-  const earliest = accounts.map((a) => a.initialDate).sort()[0] ?? today
-  const startMonth = [earliest.slice(0, 7), shiftMonth(today.slice(0, 7), -23)].sort().at(-1)!
-  const series = calc.monthly(startMonth, today)
+  // 記録のある最初の日（口座の基準日・明細の日付のうち最も古いもの）から今日まで。
+  // 62日以内なら日ごと、それより長ければ月ごと（最大24か月）に表示する
+  const earliest = [...accounts.map((a) => a.initialDate), ...transactions.map((t) => t.date)].filter((d) => d <= today).sort()[0] ?? today
+  const granularity = differenceInCalendarDays(parseISO(today), parseISO(earliest)) <= 62 ? 'day' : 'month'
+  const series =
+    granularity === 'day'
+      ? calc.daily(earliest, today)
+      : calc.monthly([earliest.slice(0, 7), shiftMonth(today.slice(0, 7), -23)].sort().at(-1)!, today)
   const netHidden = useHidden(HIDE_ASSETS)
 
   const byKind = (kind: AccountKind) => accounts.filter((a) => a.kind === kind)
@@ -81,10 +86,10 @@ export default function AccountsPage() {
         : ''
 
   return (
-    <div className="grid gap-10 md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
       <section className="md:col-span-2">
         <SectionEyebrow>総資産</SectionEyebrow>
-        <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
           <div>
             <div className="surface-pearl rounded-xl px-5 py-4">
               <p className="text-[2.5rem] leading-tight">
@@ -93,7 +98,7 @@ export default function AccountsPage() {
               <p className="pt-1 text-xs text-slate">銀行と現金の残高合計 − クレカの未払い額</p>
             </div>
           </div>
-          <AssetLineChart data={series} hidden={netHidden} />
+          <AssetLineChart data={series} hidden={netHidden} granularity={granularity} />
         </div>
       </section>
       <div className="flex flex-col gap-10">

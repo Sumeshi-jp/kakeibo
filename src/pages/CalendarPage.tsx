@@ -41,7 +41,7 @@ export default function CalendarPage() {
   return (
     <>
       <MonthSwitcher />
-      <div className="grid gap-8 md:grid-cols-[3fr_2fr]">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div>
           <div className="grid grid-cols-7 border-b border-ink text-center text-xs text-slate">
             {WEEKDAYS.map((w, i) => (

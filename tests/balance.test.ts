@@ -163,3 +163,21 @@ describe('createAssetCalculator', () => {
     expect(calc.upcoming('2026-04-10')).toEqual([])
   })
 })
+
+describe('基準日より前の残高（さかのぼり）', () => {
+  it('基準日より前の日は、基準日残高から間の増減を差し引いて求める', () => {
+    const bank: Account = { id: 'bank1', name: '銀行', kind: 'bank', initialBalance: 100_000, initialDate: '2026-10-14', order: 0, archived: false }
+    const txs: Transaction[] = [
+      { id: 'a', type: 'expense', date: '2026-10-05', amount: 3_000, categoryId: 'x', source: { kind: 'bank', id: 'bank1' }, memo: '' },
+      { id: 'b', type: 'income', date: '2026-10-10', amount: 50_000, categoryId: 'y', source: { kind: 'bank', id: 'bank1' }, memo: '' },
+    ]
+    const calc = createAssetCalculator([bank], [], txs)
+    // 基準日（10/14 朝）に 100,000。10/10 に +50,000 されていたので、10/9 の時点では 50,000
+    expect(calc.accountBalance(bank, '2026-10-09')).toBe(50_000)
+    // 10/5 に −3,000 されていたので、10/4 の時点では 53,000
+    expect(calc.accountBalance(bank, '2026-10-04')).toBe(53_000)
+    // 基準日以降は今までどおり（基準日より前の明細は含めない）
+    expect(calc.accountBalance(bank, '2026-10-14')).toBe(100_000)
+    expect(calc.daily('2026-10-12', '2026-10-14').map((s) => s.net)).toEqual([100_000, 100_000, 100_000])
+  })
+})

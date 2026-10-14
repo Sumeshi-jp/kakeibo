@@ -28,7 +28,7 @@ export function CategoryBreakdown({ totals, emptyText }: { totals: CategoryTotal
   const max = rows[0]?.total ?? 1
 
   return (
-    <div className="grid gap-6 sm:grid-cols-[200px_1fr] sm:items-center">
+    <div className="grid gap-6 sm:grid-cols-[200px_minmax(0,1fr)] sm:items-center">
       <div className="relative mx-auto size-48">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>

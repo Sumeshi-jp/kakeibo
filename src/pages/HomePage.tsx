@@ -23,7 +23,7 @@ export default function HomePage() {
   return (
     <>
       <MonthSwitcher />
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <section>
           <SectionEyebrow>月の収支</SectionEyebrow>
           <div className="surface-pearl rounded-xl px-5 pt-4 pb-3">

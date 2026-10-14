@@ -46,7 +46,7 @@ export default function SettingsPage() {
   const label = type === 'expense' ? '支出' : '収入'
 
   return (
-    <div className="grid gap-10 md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
       <section>
         <SectionEyebrow
           aside={<AddButton onClick={() => setEditing({})} />}

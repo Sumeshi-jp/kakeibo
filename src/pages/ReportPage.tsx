@@ -37,7 +37,7 @@ export default function ReportPage() {
   return (
     <>
       <MonthSwitcher />
-      <div className="grid gap-10 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
         <section>
           <SectionEyebrow>カテゴリ別</SectionEyebrow>
           <div className="mb-4">

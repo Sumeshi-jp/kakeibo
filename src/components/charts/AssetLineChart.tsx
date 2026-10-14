@@ -14,10 +14,11 @@ const LINE = 'var(--color-ink)'
  * 総資産の推移（1系列なので凡例なし。見出しが系列名を兼ねる）。
  * hidden のときは縦軸の目盛りと吹き出しの金額を伏せる。
  */
-export function AssetLineChart({ data, hidden }: { data: AssetPoint[]; hidden: boolean }) {
+export function AssetLineChart({ data, hidden, granularity }: { data: AssetPoint[]; hidden: boolean; granularity: 'day' | 'month' }) {
   if (data.length < 2) {
-    return <p className="border-b border-hairline py-6 text-center text-sm text-slate">推移を表示するには2か月分以上の記録が必要です</p>
+    return <p className="border-b border-hairline py-6 text-center text-sm text-slate">記録が2日分以上になると、ここに推移を表示します</p>
   }
+  const tickLabel = (d: string) => (granularity === 'day' ? `${Number(d.slice(5, 7))}/${Number(d.slice(8))}` : `${Number(d.slice(5, 7))}月`)
   const ticks = yTicks(data.map((d) => d.net))
   return (
     <div className="relative h-56">
@@ -26,7 +27,7 @@ export function AssetLineChart({ data, hidden }: { data: AssetPoint[]; hidden: b
           <CartesianGrid vertical={false} stroke="var(--color-hairline)" />
           <XAxis
             dataKey="asOf"
-            tickFormatter={(d: string) => `${Number(d.slice(5, 7))}月`}
+            tickFormatter={tickLabel}
             tick={{ fontSize: 11, fill: 'var(--color-slate)' }}
             tickLine={false}
             axisLine={{ stroke: 'var(--color-silver)' }}
@@ -60,7 +61,7 @@ export function AssetLineChart({ data, hidden }: { data: AssetPoint[]; hidden: b
             dataKey="net"
             stroke={LINE}
             strokeWidth={2}
-            dot={{ r: 4, fill: LINE, stroke: 'var(--color-canvas)', strokeWidth: 2 }}
+            dot={data.length > 31 ? false : { r: granularity === 'day' ? 3 : 4, fill: LINE, stroke: 'var(--color-canvas)', strokeWidth: 2 }}
             activeDot={{ r: 6, fill: LINE, stroke: 'var(--color-canvas)', strokeWidth: 2 }}
             isAnimationActive={false}
           />
