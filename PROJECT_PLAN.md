@@ -1,7 +1,7 @@
 # kakeibo（個人用 家計簿Webアプリ）設計書
 
 > 最終更新: 2026-10-14
-> ステータス: Phase 3 着手前
+> ステータス: Phase 3 実装中
 
 ## プロジェクト概要
 
@@ -185,11 +185,11 @@ kakeibo/
 - [x] HashRouter でルーティングを設定する（`/`, `/calendar`, `/report`, `/accounts`, `/settings`）
 
 ### Phase 3: 認証・データ層
-- [ ] `LoginPage` とGoogleログイン、ログイン状態の管理を作り、未ログイン時は `/login` に移動させる
+- [x] `LoginPage` とGoogleログイン、ログイン状態の管理を作り、未ログイン時は `/login` に移動させる
 - [ ] `firestore.rules` を作成する（`request.auth.uid == userId` のときだけ読み書きを許可）
 - [ ] 初回ログイン時に初期データを作成する：既定のカテゴリ（食費、日用品、交通、住居、通信、娯楽、医療、給与など）と「財布（現金）」口座
-- [ ] `useAccounts` / `useCards` / `useCategories` / `useTransactions(month)` のフックを作る（onSnapshot でリアルタイムに同期）
-- [ ] 型定義 `src/types.ts`（Account, Card, Category, Transaction）を作る
+- [x] `useAccounts` / `useCards` / `useCategories` / `useTransactions(month)` のフックを作る（onSnapshot でリアルタイムに同期）
+- [x] 型定義 `src/types.ts`（Account, Card, Category, Transaction）を作る
 
 ### Phase 4: 口座・カード・カテゴリ管理
 - [ ] `AccountsPage`：現金と銀行の口座の一覧、追加、編集（名前、初期残高、基準日）、並べ替え、アーカイブ
@@ -245,3 +245,4 @@ kakeibo/
 - 2026-10-14: 設計書を作成
 - 2026-10-14: Phase 1 — Vite + React + TS の初期化、パッケージ導入、Firebase 接続設定（`.env.local`）、GitHub リポジトリ作成。npm audit で firebase 依存の @grpc/grpc-js に high 警告4件（Node 用の通信ライブラリで、ブラウザでは使われないため対応は保留）
 - 2026-10-14: Firebase の Authentication（Google）と Firestore（東京）を有効化済み（ユーザー作業）。Phase 2 — デザイントークン、フォント、基本部品（Amount / SectionEyebrow / PillButton / TextInput / BottomSheet）、タブバーとサイドバー、HashRouter と各画面の仮表示を実装。金額を隠す切り替えをヘッダーに配置（localStorage に保存）
+- 2026-10-14: Phase 3 — Googleログイン（ポップアップ方式）、未ログイン時の /login への移動、型定義、Firestore 購読フック、初回ログイン時の初期データ作成、`firestore.rules` を実装。ルールの反映とログインの実機確認が残り
