@@ -31,6 +31,32 @@
   }
 }
 
+@layer components {
+  /*
+   * 下からせり上がるシート。<dialog> の既定の位置はブラウザによって違い、
+   * iPhone のホーム画面から開いたときに画面の下へはみ出したため、位置と高さを明示する。
+   */
+  .sheet {
+    position: fixed;
+    inset: auto 0 0 0;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 90vh;
+    max-height: 90dvh;
+  }
+
+  @media (min-width: 768px) {
+    .sheet {
+      inset: 0;
+      margin: auto;
+      width: 32rem;
+      height: fit-content;
+    }
+  }
+}
+
 @layer utilities {
   .tabular {
     font-variant-numeric: tabular-nums;

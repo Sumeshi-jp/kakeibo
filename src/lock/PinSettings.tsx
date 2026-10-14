@@ -1,6 +1,5 @@
-import { Lock } from 'lucide-react'
+import { Lock, X } from 'lucide-react'
 import { useState } from 'react'
-import { BottomSheet } from '../components/BottomSheet'
 import { Segmented, SelectField } from '../components/fields'
 import { PillButton } from '../components/PillButton'
 import { SectionEyebrow } from '../components/SectionEyebrow'
@@ -121,11 +120,18 @@ export function PinSettings() {
         </div>
       )}
 
-      <BottomSheet open={step !== null} title={title} onClose={close}>
-        {step && (
-          <div className="flex flex-col items-center gap-4 py-2">
-            <p className={`min-h-5 text-sm ${message ? 'text-expense' : 'text-slate'}`} role="alert">
-              {message ?? (step.kind === 'confirm' ? '確認のため、同じ PIN をもう一度入力してください' : '')}
+      {/* シートだと iPhone で下にはみ出したため、ロック画面と同じく全画面で表示する */}
+      {step && (
+        <div role="dialog" aria-modal="true" aria-label={title} className="pt-safe pb-safe fixed inset-0 z-50 flex flex-col bg-canvas">
+          <div className="flex shrink-0 items-center justify-between border-b border-hairline px-4 py-3">
+            <h2 className="text-lg font-bold">{title}</h2>
+            <button type="button" onClick={close} aria-label="閉じる" className="grid size-11 place-items-center rounded-full hover:bg-soft">
+              <X size={22} />
+            </button>
+          </div>
+          <div className="flex flex-1 flex-col items-center justify-center gap-6 overflow-y-auto px-4 py-6">
+            <p className={`min-h-5 text-center text-sm ${message ? 'text-expense' : 'text-slate'}`} role="alert">
+              {message ?? (step.kind === 'confirm' ? '確認のため、同じ PIN をもう一度入力してください' : `${step.kind === 'verify' ? (config?.length ?? 4) : step.length}桁の数字を入力してください`)}
             </p>
             <PinPad
               key={`${step.kind}-${step.kind === 'verify' ? step.then : step.length}`}
@@ -133,8 +139,8 @@ export function PinSettings() {
               onComplete={onComplete}
             />
           </div>
-        )}
-      </BottomSheet>
+        </div>
+      )}
     </section>
   )
 }

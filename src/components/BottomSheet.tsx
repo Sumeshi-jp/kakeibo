@@ -42,7 +42,7 @@ export function BottomSheet({ open, title, onClose, children }: BottomSheetProps
       ref={ref}
       onClick={(e) => e.target === ref.current && onClose()}
       aria-label={title}
-      className="m-0 mt-auto max-h-[92dvh] w-full max-w-none flex-col overflow-hidden rounded-t-xl bg-canvas p-0 text-ink open:flex backdrop:bg-black/40 md:m-auto md:max-w-lg md:rounded-xl"
+      className="sheet flex-col overflow-hidden rounded-t-xl bg-canvas p-0 text-ink open:flex backdrop:bg-black/40 md:rounded-xl"
     >
       <div className="flex shrink-0 items-center justify-between border-b border-hairline px-4 py-3">
         <h2 className="text-lg font-bold">{title}</h2>
