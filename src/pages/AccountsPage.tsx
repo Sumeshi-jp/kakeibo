@@ -5,11 +5,14 @@ import { Amount } from '../components/Amount'
 import { BottomSheet } from '../components/BottomSheet'
 import { ManagedList } from '../components/ManagedList'
 import { SectionEyebrow } from '../components/SectionEyebrow'
-import { useAccounts, useCards } from '../data/hooks'
+import { AssetLineChart } from '../components/charts/AssetLineChart'
+import { useAssets } from '../data/useAssets'
+import { todayString } from '../lib/dates'
 import { moved, reorderItems } from '../data/mutations'
 import { AccountForm } from '../forms/AccountForm'
 import { CardForm } from '../forms/CardForm'
 import { dayLabel, monthOffsetLabel } from '../lib/days'
+import { shiftMonth } from '../lib/dates'
 import type { Account, AccountKind, Card } from '../types'
 
 type Editing =
@@ -27,9 +30,14 @@ function AddButton({ label, onClick }: { label: string; onClick: () => void }) {
 
 export default function AccountsPage() {
   const uid = useUid()
-  const { data: accounts } = useAccounts()
-  const { data: cards } = useCards()
+  const { accounts, cards, transactions, calc } = useAssets()
   const [editing, setEditing] = useState<Editing>(null)
+  const today = todayString()
+  const assets = calc.snapshot(today)
+  // 記録のある最初の月（口座の基準日・取引日のうち最も古いもの）から今月まで。長すぎる場合は直近24か月
+  const earliest = [...accounts.map((a) => a.initialDate), ...transactions.map((t) => t.date)].sort()[0] ?? today
+  const startMonth = [earliest.slice(0, 7), shiftMonth(today.slice(0, 7), -23)].sort().at(-1)!
+  const series = calc.monthly(startMonth, today)
 
   const byKind = (kind: AccountKind) => accounts.filter((a) => a.kind === kind)
   const accountName = (id: string) => accounts.find((a) => a.id === id)?.name ?? '未設定'
@@ -53,12 +61,7 @@ export default function AccountsPage() {
             <>
               <Icon size={20} className="shrink-0 text-slate" />
               <span className="min-w-0 flex-1 truncate">{a.name}</span>
-              {/* Phase 6 で取引を反映した現在の残高に置き換える */}
-              <span className="text-right text-xs text-slate">
-                初期残高
-                <br />
-                <Amount value={a.initialBalance} className="text-sm text-ink" />
-              </span>
+              <Amount value={calc.accountBalance(a, today)} className="font-bold" />
             </>
           )}
         />
@@ -75,6 +78,18 @@ export default function AccountsPage() {
 
   return (
     <div className="grid gap-10 md:grid-cols-2">
+      <section className="md:col-span-2">
+        <SectionEyebrow>総資産</SectionEyebrow>
+        <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
+          <div>
+            <p className="border-b border-hairline py-3 text-4xl font-bold">
+              <Amount value={assets.net} />
+            </p>
+            <p className="pt-2 text-xs text-slate">銀行と現金の残高合計 − クレカの未払い額</p>
+          </div>
+          <AssetLineChart data={series} />
+        </div>
+      </section>
       <div className="flex flex-col gap-10">
         {accountSection('bank', '銀行', Landmark)}
         {accountSection('cash', '現金', Banknote)}
@@ -95,6 +110,11 @@ export default function AccountsPage() {
                   {dayLabel(c.closingDay)}締め・{monthOffsetLabel(c.withdrawalMonthOffset)}
                   {dayLabel(c.withdrawalDay)}払い ／ {accountName(c.withdrawalAccountId)}
                 </span>
+              </span>
+              <span className="text-right text-xs text-slate">
+                未払い
+                <br />
+                <Amount value={-calc.cardUnpaid(c, today)} className="text-sm font-bold text-ink" />
               </span>
             </>
           )}

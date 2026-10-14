@@ -6,7 +6,7 @@ import { settingsDoc, userDoc } from './paths'
 
 type Seed<T> = Omit<T, 'order' | 'archived'>
 
-const expenseCategories: Seed<Category>[] = [
+export const expenseCategories: Seed<Category>[] = [
   { id: 'exp-food', name: '食費', type: 'expense', icon: 'utensils', color: '#c2410c' },
   { id: 'exp-daily', name: '日用品', type: 'expense', icon: 'shopping-basket', color: '#a16207' },
   { id: 'exp-transport', name: '交通', type: 'expense', icon: 'train-front', color: '#1d4ed8' },
@@ -20,7 +20,7 @@ const expenseCategories: Seed<Category>[] = [
   { id: 'exp-other', name: 'その他', type: 'expense', icon: 'ellipsis', color: '#595959' },
 ]
 
-const incomeCategories: Seed<Category>[] = [
+export const incomeCategories: Seed<Category>[] = [
   { id: 'inc-salary', name: '給与', type: 'income', icon: 'briefcase', color: '#0f7f7a' },
   { id: 'inc-bonus', name: '賞与', type: 'income', icon: 'gift', color: '#0f766e' },
   { id: 'inc-side', name: '副収入', type: 'income', icon: 'coins', color: '#15803d' },

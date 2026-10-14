@@ -6,7 +6,7 @@ interface TextInputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 /** カプセル型の入力欄。ラベルは常に表示する */
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function TextInput(
-  { label, id, className = '', ...rest },
+  { label, id, className = '', autoFocus, ...rest },
   ref,
 ) {
   const inputId = id ?? `in-${label}`
@@ -16,6 +16,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
       <input
         ref={ref}
         id={inputId}
+        data-autofocus={autoFocus || undefined}
         className={`h-11 w-full rounded-xl border border-slate bg-canvas px-4 text-base outline-none focus:border-ink focus:ring-1 focus:ring-ink ${className}`}
         {...rest}
       />

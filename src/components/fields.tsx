@@ -1,8 +1,8 @@
 import { ChevronDown } from 'lucide-react'
 import type { ReactNode, SelectHTMLAttributes } from 'react'
 
-const fieldBox =
-  'h-11 w-full rounded-xl border border-slate bg-canvas px-4 text-base outline-none focus:border-ink focus:ring-1 focus:ring-ink'
+const fieldFrame = 'w-full rounded-xl border border-slate bg-canvas px-4 outline-none focus:border-ink focus:ring-1 focus:ring-ink'
+const fieldBox = `${fieldFrame} h-11 text-base`
 
 export function FieldLabel({ label, htmlFor, children }: { label: string; htmlFor?: string; children: ReactNode }) {
   return (
@@ -66,11 +66,15 @@ export function YenInput({
   value,
   onChange,
   allowNegative = false,
+  size = 'md',
+  autoFocus,
 }: {
   label: string
   value: number
   onChange: (v: number) => void
   allowNegative?: boolean
+  size?: 'md' | 'lg'
+  autoFocus?: boolean
 }) {
   const id = `yen-${label}`
   const text = value === 0 ? '' : new Intl.NumberFormat('ja-JP').format(value)
@@ -81,6 +85,7 @@ export function YenInput({
         <input
           id={id}
           inputMode={allowNegative ? 'text' : 'numeric'}
+          data-autofocus={autoFocus || undefined}
           autoComplete="off"
           placeholder="0"
           value={text}
@@ -91,7 +96,7 @@ export function YenInput({
             const n = digits ? Number(digits) : 0
             onChange(neg ? -n : n)
           }}
-          className={`${fieldBox} tabular pl-9 text-right`}
+          className={`${fieldFrame} tabular pl-9 text-right ${size === 'lg' ? 'h-14 text-3xl font-bold' : 'h-11 text-base'}`}
         />
       </div>
     </FieldLabel>

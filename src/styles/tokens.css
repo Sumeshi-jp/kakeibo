@@ -21,6 +21,9 @@
   /* Semantic */
   --color-expense: #c31833;
   --color-income: #0f7f7a;
+  /* グラフの塗り用（文字用より彩度を上げ、白地で灰色に見えないようにする） */
+  --color-income-mark: #008a7e;
+  --color-expense-mark: #c31833;
 
   /* Radius */
   --radius-xs: 2px;

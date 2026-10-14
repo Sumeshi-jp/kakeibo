@@ -38,7 +38,7 @@ export function TabBar() {
         <div className="flex flex-1 justify-center">
           <button
             type="button"
-            onClick={openEntry}
+            onClick={() => openEntry()}
             aria-label="収支を入力"
             className="grid size-12 place-items-center rounded-full bg-ink text-white active:scale-95"
           >

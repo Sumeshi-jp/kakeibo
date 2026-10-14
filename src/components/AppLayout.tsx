@@ -1,5 +1,8 @@
 import { Eye, EyeOff, Settings } from 'lucide-react'
+import { Suspense, useEffect } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import { useLookups } from '../data/useLookups'
+import { TransactionForm } from '../forms/TransactionForm'
 import { useUiStore } from '../store/uiStore'
 import { BottomSheet } from './BottomSheet'
 import { SideNav } from './SideNav'
@@ -9,6 +12,10 @@ import { primaryNav, settingsNav } from './navItems'
 
 function usePageTitle() {
   const { pathname } = useLocation()
+  // 画面を切り替えたら先頭から表示する
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
   return [...primaryNav, settingsNav].find((n) => n.to === pathname)?.label ?? 'kakeibo'
 }
 
@@ -31,8 +38,10 @@ function HideAmountsToggle() {
 
 export function AppLayout() {
   const title = usePageTitle()
-  const entryOpen = useUiStore((s) => s.entryOpen)
+  const entry = useUiStore((s) => s.entry)
   const closeEntry = useUiStore((s) => s.closeEntry)
+  // 口座・カテゴリをここで購読しておき、入力シートを開いたときにすぐ使えるようにする
+  const lookups = useLookups()
 
   return (
     <div className="flex min-h-dvh">
@@ -52,14 +61,23 @@ export function AppLayout() {
           </div>
         </header>
         <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-5 pb-28 md:pb-10">
-          <Outlet />
+          <Suspense fallback={<p className="py-10 text-center text-sm text-slate">読み込み中…</p>}>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
       <TabBar />
       <Toast />
-      <BottomSheet open={entryOpen} title="収支を入力" onClose={closeEntry}>
-        {/* Phase 5 で TransactionForm に置き換える */}
-        <p className="text-slate">入力フォームは Phase 5 で実装します。</p>
+      <BottomSheet open={entry !== null} title={entry?.mode === 'edit' ? '明細を編集' : '収支を入力'} onClose={closeEntry}>
+        {entry && (
+          <TransactionForm
+            key={entry.mode === 'edit' ? entry.tx.id : `new-${entry.date ?? ''}`}
+            tx={entry.mode === 'edit' ? entry.tx : undefined}
+            defaultDate={entry.mode === 'new' ? entry.date : undefined}
+            lookups={lookups}
+            onDone={closeEntry}
+          />
+        )}
       </BottomSheet>
     </div>
   )

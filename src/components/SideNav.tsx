@@ -35,7 +35,7 @@ export function SideNav() {
         <span className="text-xl font-black tracking-tight">kakeibo</span>
       </div>
       <div className="px-4 pb-4">
-        <PillButton block onClick={openEntry}>
+        <PillButton block onClick={() => openEntry()}>
           <Plus size={18} /> 収支を入力
         </PillButton>
       </div>

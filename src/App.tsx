@@ -2,12 +2,15 @@ import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthProvider'
 import { RequireAuth } from './auth/RequireAuth'
 import { AppLayout } from './components/AppLayout'
-import AccountsPage from './pages/AccountsPage'
-import CalendarPage from './pages/CalendarPage'
+import { lazy } from 'react'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
-import ReportPage from './pages/ReportPage'
-import SettingsPage from './pages/SettingsPage'
+
+// グラフ（Recharts）を使う画面などは開いたときに読み込む
+const CalendarPage = lazy(() => import('./pages/CalendarPage'))
+const ReportPage = lazy(() => import('./pages/ReportPage'))
+const AccountsPage = lazy(() => import('./pages/AccountsPage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 
 // GitHub Pages はURLの書き換えができないため HashRouter（#/calendar 形式）を使う
 export default function App() {

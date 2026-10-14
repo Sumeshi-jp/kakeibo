@@ -53,7 +53,7 @@ export function AccountForm({ account, defaultKind = 'bank', siblings, onDone }:
       />
       <YenInput label="初期残高" value={initialBalance} onChange={setInitialBalance} allowNegative />
       <TextInput label="残高の基準日" type="date" value={initialDate} onChange={(e) => setInitialDate(e.target.value)} />
-      <p className="-mt-2 text-xs text-slate">基準日時点の残高を入れてください。それ以降の収支から今の残高を計算します。</p>
+      <p className="-mt-2 text-xs text-slate">基準日の朝（その日の収支を記録する前）の残高を入れてください。基準日以降の収支から今の残高を計算します。</p>
       <FormActions
         canSave={canSave}
         archived={account?.archived}

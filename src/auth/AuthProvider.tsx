@@ -1,16 +1,19 @@
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth'
 import { useEffect, useState, type ReactNode } from 'react'
+import { DEMO } from '../data/demo'
 import { seedIfNeeded } from '../data/seed'
 import { auth, googleProvider } from '../lib/firebase'
 import { AuthContext, type AuthState } from './useAuth'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(DEMO ? ({ uid: 'demo', email: 'demo@example.com' } as User) : null)
+  const [loading, setLoading] = useState(!DEMO)
 
   useEffect(
     () =>
-      onAuthStateChanged(auth, async (u) => {
+      DEMO
+        ? undefined
+        : onAuthStateChanged(auth, async (u) => {
         if (u) {
           // 初回ログイン時だけカテゴリと「財布」口座を作る。失敗してもアプリは使えるようにする
           await seedIfNeeded(u.uid).catch((e) => console.error('初期データの作成に失敗しました', e))
