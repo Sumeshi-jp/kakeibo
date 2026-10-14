@@ -30,7 +30,7 @@ export function TabBar() {
   return (
     <nav
       aria-label="メイン"
-      className="pb-safe fixed inset-x-0 bottom-0 z-20 border-t border-hairline bg-canvas md:hidden"
+      className="pb-safe fixed inset-x-0 bottom-0 z-20 border-t border-hairline bg-canvas/85 backdrop-blur-md md:hidden"
     >
       <div className="flex items-center">
         <Tab item={a} />
@@ -40,7 +40,7 @@ export function TabBar() {
             type="button"
             onClick={() => openEntry()}
             aria-label="収支を入力"
-            className="grid size-12 place-items-center rounded-full bg-ink text-white active:scale-95"
+            className="grid size-12 place-items-center rounded-full bg-ink text-white shadow-[0_6px_16px_rgb(20_18_14/0.25)] ring-4 ring-canvas transition-transform active:scale-95"
           >
             <Plus size={26} strokeWidth={2.4} />
           </button>

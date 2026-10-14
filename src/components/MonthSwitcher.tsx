@@ -7,12 +7,12 @@ export function MonthSwitcher() {
   const setMonth = useUiStore((s) => s.setMonth)
   const current = thisMonth()
   return (
-    <div className="mb-5 flex items-center justify-between border-b border-ink pb-2">
+    <div className="mb-5 flex items-center justify-between border-b border-hairline pb-2">
       <button type="button" aria-label="前の月" onClick={() => setMonth(shiftMonth(month, -1))} className="grid size-11 place-items-center rounded-full hover:bg-soft">
         <ChevronLeft size={22} />
       </button>
       <div className="flex items-center gap-2">
-        <h2 className="text-xl font-bold tabular">{monthHeading(month)}</h2>
+        <h2 className="figure text-2xl">{monthHeading(month)}</h2>
         {month !== current && (
           <button type="button" onClick={() => setMonth(current)} className="min-h-8 rounded-lg border border-ink px-3 text-xs">
             今月

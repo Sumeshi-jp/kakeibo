@@ -1,6 +1,7 @@
 import { Plus } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { useUiStore } from '../store/uiStore'
+import { Brand } from './Brand'
 import { PillButton } from './PillButton'
 import { primaryNav, settingsNav, type NavItem } from './navItems'
 
@@ -31,8 +32,7 @@ export function SideNav() {
   return (
     <aside className="sticky top-0 hidden h-dvh w-56 shrink-0 flex-col border-r border-hairline md:flex">
       <div className="flex items-center gap-2 px-4 py-5">
-        <span aria-hidden className="h-6 w-2 bg-marker" />
-        <span className="text-xl font-black tracking-tight">kakeibo</span>
+        <Brand />
       </div>
       <div className="px-4 pb-4">
         <PillButton block onClick={() => openEntry()}>

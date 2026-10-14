@@ -18,7 +18,7 @@ export function PillButton({ variant = 'dark', block = false, className = '', ty
   return (
     <button
       type={type}
-      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-5 text-base leading-none transition-colors disabled:opacity-40 ${variants[variant]} ${block ? 'w-full' : ''} ${className}`}
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-5 text-base leading-none font-medium tracking-wide transition-colors disabled:opacity-40 ${variants[variant]} ${block ? 'w-full' : ''} ${className}`}
       {...rest}
     />
   )

@@ -20,8 +20,8 @@ export default defineConfig({
         start_url: '/kakeibo/',
         scope: '/kakeibo/',
         display: 'standalone',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        theme_color: '#faf9f7',
+        background_color: '#faf9f7',
         icons: [
           { src: 'icons/pwa-192x192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/pwa-512x512.png', sizes: '512x512', type: 'image/png' },

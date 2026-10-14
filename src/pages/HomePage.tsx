@@ -26,23 +26,25 @@ export default function HomePage() {
       <div className="grid gap-8 md:grid-cols-2">
         <section>
           <SectionEyebrow>月の収支</SectionEyebrow>
-          <p className="border-b border-hairline py-3 text-4xl font-bold">
-            <Amount value={sum.balance} hideKey={HIDE_BALANCE} sign="always" tone="auto" />
-          </p>
-          <dl className="grid grid-cols-2 gap-4 border-b border-hairline py-3">
-            <div>
-              <dt className="text-xs text-slate">収入</dt>
-              <dd className="text-xl font-bold">
-                <Amount value={sum.income} hideKey={HIDE_BALANCE} eye={false} tone="income" />
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs text-slate">支出</dt>
-              <dd className="text-xl font-bold">
-                <Amount value={sum.expense} hideKey={HIDE_BALANCE} eye={false} tone="expense" />
-              </dd>
-            </div>
-          </dl>
+          <div className="surface-pearl rounded-xl px-5 pt-4 pb-3">
+            <p className="pb-3 text-[2.75rem] leading-tight">
+              <Amount value={sum.balance} hideKey={HIDE_BALANCE} sign="always" tone="auto" className="figure" />
+            </p>
+            <dl className="grid grid-cols-2 gap-4 border-t border-hairline pt-3">
+              <div>
+                <dt className="text-xs tracking-wider text-slate">収入</dt>
+                <dd className="text-2xl">
+                  <Amount value={sum.income} hideKey={HIDE_BALANCE} eye={false} tone="income" className="figure" />
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs tracking-wider text-slate">支出</dt>
+                <dd className="text-2xl">
+                  <Amount value={sum.expense} hideKey={HIDE_BALANCE} eye={false} tone="expense" className="figure" />
+                </dd>
+              </div>
+            </dl>
+          </div>
         </section>
 
         <section>

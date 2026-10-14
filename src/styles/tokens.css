@@ -1,22 +1,24 @@
 /*
  * デザイントークン
- * 白地・フラット・罫線で区切る。オレンジは目印（セクションバー）専用で、操作には使わない。
+ * アイボリーの地に罫線で区切る、控えめで上質な見た目。アプリアイコン（淡いグレー地に黒のセリフ体 K）に合わせる。
+ * シャンパンゴールドは目印（セクションの細い線）専用で、操作には使わない。
  * 意味を持つ色は「支出」と「収入」の2つだけ。
  */
 @theme {
   /* Surface */
-  --color-canvas: #ffffff;
-  --color-soft: #f0f0f0;
-  --color-hairline: #d8d8d8;
-  --color-silver: #bebebe;
+  --color-canvas: #faf9f7;
+  --color-paper: #ffffff;
+  --color-soft: #f1efea;
+  --color-hairline: #e3dfd6;
+  --color-silver: #c6c0b3;
 
   /* Text */
-  --color-ink: #111111;
-  --color-charcoal: #333333;
-  --color-slate: #595959;
+  --color-ink: #151515;
+  --color-charcoal: #33312d;
+  --color-slate: #5c5953;
 
-  /* Brand marker */
-  --color-marker: #fa9000;
+  /* Brand marker（シャンパンゴールド。装飾専用） */
+  --color-marker: #a8865a;
 
   /* Semantic */
   --color-expense: #c31833;
@@ -34,6 +36,15 @@
 
   /* Type */
   --font-sans: "Roboto", "Noto Sans JP", system-ui, sans-serif;
+  /* 見出し */
+  --font-serif: "Noto Serif JP", serif;
+  /* ロゴ（アイコンの K と同じ雰囲気の筆記体寄りのセリフ） */
+  --font-brand: "Cormorant Garamond", serif;
+  /* 大きな金額・月の見出し（数字の高さがそろうセリフ体） */
+  --font-figure: "Playfair Display", "Noto Serif JP", serif;
+
+  /* 影はカードとシートだけに使う、ごく淡いもの */
+  --shadow-card: 0 1px 2px rgb(20 18 14 / 0.04), 0 8px 24px rgb(20 18 14 / 0.06);
 }
 
 /* PIN を間違えたときに丸を左右に揺らす */

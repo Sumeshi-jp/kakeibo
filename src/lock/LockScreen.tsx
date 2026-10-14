@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../auth/useAuth'
+import { Brand } from '../components/Brand'
 import { useLockStore } from './lockStore'
 import { checkPin, clearPin, getPinConfig, lockoutRemainingMs, recordFailure, resetFailures } from './pin'
 import { PinPad } from './PinPad'
@@ -35,10 +36,7 @@ export function LockScreen() {
 
   return (
     <main className="pt-safe flex min-h-dvh flex-col items-center justify-center gap-8 bg-canvas px-6">
-      <div className="flex items-center gap-3">
-        <span aria-hidden className="h-8 w-2 bg-marker" />
-        <h1 className="text-3xl font-black tracking-tight">kakeibo</h1>
-      </div>
+      <Brand size="lg" as="h1" />
       <p className="text-sm text-slate" role="alert">
         {waitMs > 0 ? `${Math.ceil(waitMs / 1000)}秒後にもう一度入力できます` : (message ?? 'PIN を入力してください')}
       </p>

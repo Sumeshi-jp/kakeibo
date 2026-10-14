@@ -90,10 +90,12 @@ export default function AccountsPage() {
         <SectionEyebrow>総資産</SectionEyebrow>
         <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
           <div>
-            <p className="border-b border-hairline py-3 text-4xl font-bold">
-              <Amount value={assets.net} hidden={netHidden} />
-            </p>
-            <p className="pt-2 text-xs text-slate">銀行と現金の残高合計 − クレカの未払い額</p>
+            <div className="surface-pearl rounded-xl px-5 py-4">
+              <p className="text-[2.5rem] leading-tight">
+                <Amount value={assets.net} hidden={netHidden} className="figure" />
+              </p>
+              <p className="pt-1 text-xs text-slate">銀行と現金の残高合計 − クレカの未払い額</p>
+            </div>
           </div>
           <AssetLineChart data={series} hidden={netHidden} />
         </div>
