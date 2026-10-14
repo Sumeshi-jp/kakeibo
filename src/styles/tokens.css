@@ -35,3 +35,10 @@
   /* Type */
   --font-sans: "Roboto", "Noto Sans JP", system-ui, sans-serif;
 }
+
+/* PIN を間違えたときに丸を左右に揺らす */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}

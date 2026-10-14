@@ -16,6 +16,7 @@ import { frequencyLabel } from '../lib/recurring'
 import { Amount } from '../components/Amount'
 import { moved, reorderItems } from '../data/mutations'
 import { CategoryForm } from '../forms/CategoryForm'
+import { PinSettings } from '../lock/PinSettings'
 import type { Category, CategoryType, RecurringRule } from '../types'
 
 function AddButton({ onClick }: { onClick: () => void }) {
@@ -144,6 +145,8 @@ export default function SettingsPage() {
           </PillButton>
         </div>
       </section>
+
+      <PinSettings />
 
       <section>
         <SectionEyebrow>アカウント</SectionEyebrow>
