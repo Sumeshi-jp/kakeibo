@@ -3,15 +3,15 @@
 
 @layer base {
   html {
-    /* 横方向のスクロールやはね返りで画面がずれないようにする */
-    overflow-x: hidden;
+    /* 横方向のスクロールやはね返りで画面がずれないようにする（hidden だとヘッダーやサイドバーの固定表示が効かなくなるため clip） */
+    overflow-x: clip;
     overscroll-behavior-x: none;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
   }
 
   body {
-    overflow-x: hidden;
+    overflow-x: clip;
     margin: 0;
     background: var(--color-canvas);
     color: var(--color-ink);
