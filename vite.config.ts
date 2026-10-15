@@ -10,7 +10,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // 使っている最中にページを読み込み直すと、入力中の内容が消えたり PIN を再入力させたりするため、
+      // 新しい版は待機させておき、次にアプリを開いたときに切り替える
+      registerType: 'prompt',
       includeAssets: ['icons/apple-touch-icon-180x180.png', 'icons/favicon-64x64.png'],
       manifest: {
         name: 'kakeibo',

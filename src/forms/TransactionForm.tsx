@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 import { ArrowDown, Camera, Trash2 } from 'lucide-react'
-import { useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useUid } from '../auth/useAuth'
 import { CategoryIcon } from '../components/CategoryIcon'
 import { Segmented, SelectField, YenInput } from '../components/fields'
@@ -12,6 +12,7 @@ import { frequencyLabel } from '../lib/recurring'
 import type { Lookups } from '../data/useLookups'
 import { SourceOptions } from '../components/SourceOptions'
 import { decodeSource as decode, encodeSource as encode } from '../lib/sourceRef'
+import { clearDraft, loadDraft, saveDraft } from '../lib/entryDraft'
 import type { ReceiptGuess } from '../lib/receipt'
 import { useUiStore } from '../store/uiStore'
 import { QuickCategoryAdd } from './QuickCategoryAdd'
@@ -85,19 +86,41 @@ export function TransactionForm({ tx, defaultDate, lookups, onDone }: Transactio
   const lastSource = useUiStore((s) => s.lastSource)
   const setLastSource = useUiStore((s) => s.setLastSource)
 
-  const [type, setType] = useState<TransactionType>(tx?.type ?? 'expense')
-  const [amount, setAmount] = useState(tx?.amount ?? 0)
-  const [date, setDate] = useState(() => tx?.date ?? defaultDate ?? format(new Date(), 'yyyy-MM-dd'))
-  const [categoryId, setCategoryId] = useState<string | null>(tx?.categoryId ?? null)
-  const [sourceRaw, setSource] = useState(() => (tx ? encode(tx.source) : ''))
+  // 新規入力では、前回閉じたときの入力途中の内容（下書き）があれば続きから始める
+  const [draft, setDraft] = useState(() => (tx ? null : loadDraft()))
+  const [type, setType] = useState<TransactionType>(tx?.type ?? draft?.type ?? 'expense')
+  const [amount, setAmount] = useState(tx?.amount ?? draft?.amount ?? 0)
+  const [date, setDate] = useState(() => tx?.date ?? defaultDate ?? draft?.date ?? format(new Date(), 'yyyy-MM-dd'))
+  const [categoryId, setCategoryId] = useState<string | null>(tx?.categoryId ?? draft?.categoryId ?? null)
+  const [sourceRaw, setSource] = useState(() => (tx ? encode(tx.source) : (draft?.source ?? '')))
   // 口座の読み込みが終わる前に開かれた場合もあるので、未選択なら既定値を毎回計算する
   const source = sourceRaw || (tx ? '' : initialSource(lookups, lastSource, type))
-  const [to, setTo] = useState(() => encode(tx?.to))
-  const [memo, setMemo] = useState(tx?.memo ?? '')
+  const [to, setTo] = useState(() => (tx ? encode(tx.to) : (draft?.to ?? '')))
+  const [memo, setMemo] = useState(tx?.memo ?? draft?.memo ?? '')
   const [confirmDelete, setConfirmDelete] = useState(false)
   // 新規入力のときだけ、同じ内容を定期収支として登録できる
-  const [repeat, setRepeat] = useState<'none' | RecurringFrequency>('none')
+  const [repeat, setRepeat] = useState<'none' | RecurringFrequency>(draft?.repeat ?? 'none')
   const { data: rules } = useRecurring()
+
+  // 新規入力の内容は、変わるたびに端末へ一時保存する（シートを閉じたり、アプリを閉じたりしても消えない）
+  useEffect(() => {
+    if (tx) return
+    saveDraft({ type, amount, date, categoryId, source: sourceRaw, to, memo, repeat })
+  }, [tx, type, amount, date, categoryId, sourceRaw, to, memo, repeat])
+
+  /** 下書きを捨てて、まっさらな状態に戻す */
+  const discardDraft = () => {
+    clearDraft()
+    setDraft(null)
+    setType('expense')
+    setAmount(0)
+    setDate(defaultDate ?? format(new Date(), 'yyyy-MM-dd'))
+    setCategoryId(null)
+    setSource('')
+    setTo('')
+    setMemo('')
+    setRepeat('none')
+  }
 
   const categories = lookups.categories.filter((c) => c.type === type && (!c.archived || c.id === tx?.categoryId))
   const sourceRef = decode(source)
@@ -149,6 +172,7 @@ export function TransactionForm({ tx, defaultDate, lookups, onDone }: Transactio
       })
       createTransaction(uid, { ...data, recurringId: ruleId })
     } else createTransaction(uid, data)
+    if (!tx) clearDraft()
     setLastSource(sourceRef)
     onDone()
   }
@@ -159,6 +183,14 @@ export function TransactionForm({ tx, defaultDate, lookups, onDone }: Transactio
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
+      {draft && (
+        <div role="status" className="-mb-1 flex items-center justify-between gap-3 rounded-md bg-soft px-3 py-2 text-sm">
+          <span className="text-charcoal">前回の入力途中の内容を復元しました</span>
+          <button type="button" onClick={discardDraft} className="hit-44 shrink-0 text-sm font-bold text-ink underline">
+            破棄
+          </button>
+        </div>
+      )}
       <Segmented
         label="種類"
         value={type}
