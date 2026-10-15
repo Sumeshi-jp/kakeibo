@@ -2,6 +2,7 @@ import { Eye, EyeOff, Moon, Settings, Sun } from 'lucide-react'
 import { Suspense, useEffect } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useLookups } from '../data/useLookups'
+import { INDEPENDENT_HIDE_KEYS } from '../lib/hideKeys'
 import { useIsDark } from '../lib/theme'
 import { useRecurringRunner } from '../data/useRecurringRunner'
 import { TransactionForm } from '../forms/TransactionForm'
@@ -42,7 +43,7 @@ function ThemeToggle() {
 
 function HideAmountsToggle() {
   // すべて隠れているときだけ「隠す」状態の表示にする
-  const hidden = useUiStore((s) => s.defaultHidden && !Object.values(s.hiddenOverrides).includes(false))
+  const hidden = useUiStore((s) => s.defaultHidden && !Object.entries(s.hiddenOverrides).some(([k, v]) => !INDEPENDENT_HIDE_KEYS.includes(k) && v === false))
   const toggle = useUiStore((s) => s.toggleAllHidden)
   return (
     <button

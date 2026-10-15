@@ -18,7 +18,7 @@ export default function HomePage() {
   const { calc } = useAssets()
   const today = todayString()
   const sum = totals(txs)
-  const upcoming = calc.upcoming(today).slice(0, 3)
+  const upcoming = calc.upcoming(today)
 
   return (
     <>

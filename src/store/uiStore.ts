@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+import { INDEPENDENT_HIDE_KEYS } from '../lib/hideKeys'
 import type { MoneyRef, Transaction } from '../types'
 
 /** 入力シートの状態。new は新規（日付の初期値つき）、edit は既存の明細の編集 */
@@ -59,14 +60,14 @@ export const useUiStore = create<UiState>()(
     (set) => ({
       defaultHidden: false,
       hiddenOverrides: {},
-      // 一括切り替えでは個別設定を消して、すべて同じ状態にそろえる
+      // 一括切り替えでは個別設定を消して、すべて同じ状態にそろえる（総資産など独立したキーは残す）
       toggleAllHidden: () =>
         set((s) => {
-          const allHidden = s.defaultHidden && !Object.values(s.hiddenOverrides).includes(false)
-          return { defaultHidden: !allHidden, hiddenOverrides: {} }
+          const allHidden = s.defaultHidden && !Object.entries(s.hiddenOverrides).some(([k, v]) => !isIndependent(k) && v === false)
+          const kept = Object.fromEntries(Object.entries(s.hiddenOverrides).filter(([k]) => isIndependent(k)))
+          return { defaultHidden: !allHidden, hiddenOverrides: kept }
         }),
-      toggleHidden: (key) =>
-        set((s) => ({ hiddenOverrides: { ...s.hiddenOverrides, [key]: !(s.hiddenOverrides[key] ?? s.defaultHidden) } })),
+      toggleHidden: (key) => set((s) => ({ hiddenOverrides: { ...s.hiddenOverrides, [key]: !resolveHidden(s, key) } })),
       entry: null,
       openEntry: (date) => set({ entry: { mode: 'new', date } }),
       editEntry: (tx) => set({ entry: { mode: 'edit', tx } }),
@@ -95,7 +96,14 @@ export const useUiStore = create<UiState>()(
   ),
 )
 
+const isIndependent = (key: string) => INDEPENDENT_HIDE_KEYS.includes(key)
+
+/** キーの金額を隠すか。独立したキーは一括の既定値に従わず、初めは表示 */
+function resolveHidden(s: Pick<UiState, 'hiddenOverrides' | 'defaultHidden'>, key: string): boolean {
+  return s.hiddenOverrides[key] ?? (isIndependent(key) ? false : s.defaultHidden)
+}
+
 /** キーの金額を隠すか。キーがなければ既定値 */
 export function useHidden(key?: string): boolean {
-  return useUiStore((s) => (key ? (s.hiddenOverrides[key] ?? s.defaultHidden) : s.defaultHidden))
+  return useUiStore((s) => (key ? resolveHidden(s, key) : s.defaultHidden))
 }
