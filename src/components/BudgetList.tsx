@@ -57,7 +57,7 @@ export function BudgetList({ categories, spent }: BudgetListProps) {
           c.id,
           <>
             <CategoryIcon icon={c.icon} color={c.color} size="sm" />
-            <span className="truncate">{c.name}</span>
+            <span className="truncate" title={c.name}>{c.name}</span>
           </>,
           spent.get(c.id) ?? 0,
           c.budget ?? 0,

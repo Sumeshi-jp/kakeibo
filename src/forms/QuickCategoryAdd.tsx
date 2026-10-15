@@ -75,7 +75,7 @@ export function QuickCategoryAdd({ type, siblings, onAdded }: QuickCategoryAddPr
             aria-label={`色 ${c}`}
             aria-pressed={color === c}
             onClick={() => setColor(c)}
-            className="grid aspect-square min-h-9 place-items-center rounded-full text-white"
+            className="grid aspect-square min-h-11 place-items-center rounded-full text-white"
             style={{ background: c }}
           >
             {color === c && <Check size={16} strokeWidth={3} />}
@@ -83,10 +83,10 @@ export function QuickCategoryAdd({ type, siblings, onAdded }: QuickCategoryAddPr
         ))}
       </div>
       <div className="flex gap-2">
-        <button type="button" onClick={add} disabled={!name.trim()} className="min-h-10 flex-1 rounded-lg bg-ink text-sm text-on-ink disabled:opacity-40">
+        <button type="button" onClick={add} disabled={!name.trim()} className="min-h-11 flex-1 rounded-lg bg-ink text-sm text-on-ink disabled:opacity-40">
           追加して選ぶ
         </button>
-        <button type="button" onClick={() => setOpen(false)} className="min-h-10 flex-1 rounded-lg border border-ink text-sm">
+        <button type="button" onClick={() => setOpen(false)} className="min-h-11 flex-1 rounded-lg border border-ink text-sm">
           やめる
         </button>
       </div>

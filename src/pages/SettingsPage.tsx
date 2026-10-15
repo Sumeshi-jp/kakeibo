@@ -76,7 +76,7 @@ export default function SettingsPage() {
           renderItem={(c) => (
             <>
               <CategoryIcon icon={c.icon} color={c.color} size="sm" />
-              <span className="min-w-0 flex-1 truncate">{c.name}</span>
+              <span className="min-w-0 flex-1 truncate" title={c.name}>{c.name}</span>
             </>
           )}
         />
@@ -100,7 +100,7 @@ export default function SettingsPage() {
               <>
                 <CategoryIcon icon={cat?.icon ?? 'ellipsis'} color={cat?.color ?? '#595959'} size="sm" />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate">{r.memo || cat?.name}</span>
+                  <span className="block truncate" title={r.memo || cat?.name}>{r.memo || cat?.name}</span>
                   <span className="block truncate text-xs text-slate">
                     {frequencyLabel(r)} ／ {lookups.sourceName(r.source)}
                   </span>

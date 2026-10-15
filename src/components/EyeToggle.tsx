@@ -15,7 +15,7 @@ export function EyeToggle({ hideKey, className = '' }: { hideKey: string; classN
       }}
       aria-pressed={hidden}
       aria-label={hidden ? '金額を表示する' : '金額を隠す'}
-      className={`-my-1 inline-grid size-8 shrink-0 place-items-center rounded-full text-slate hover:bg-soft ${className}`}
+      className={`hit-44 -my-1 inline-grid size-8 shrink-0 place-items-center rounded-full text-slate hover:bg-soft ${className}`}
     >
       <Icon size={15} />
     </button>

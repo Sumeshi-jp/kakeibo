@@ -69,7 +69,7 @@ export default function AccountsPage() {
           renderItem={(a) => (
             <>
               <Icon size={20} className="shrink-0 text-slate" />
-              <span className="min-w-0 flex-1 truncate">{a.name}</span>
+              <span className="min-w-0 flex-1 truncate" title={a.name}>{a.name}</span>
             </>
           )}
           renderAside={(a) => <Amount value={calc.accountBalance(a, today)} hideKey={a.kind === 'bank' ? hideBankKey(a.id) : HIDE_CASH} className="font-bold" />}
@@ -116,7 +116,7 @@ export default function AccountsPage() {
             <>
               <CreditCard size={20} className="shrink-0 text-slate" />
               <span className="min-w-0 flex-1">
-                <span className="block truncate">{c.name}</span>
+                <span className="block truncate" title={c.name}>{c.name}</span>
                 <span className="block text-xs text-slate">
                   {dayLabel(c.closingDay)}締め・{monthOffsetLabel(c.withdrawalMonthOffset)}
                   {dayLabel(c.withdrawalDay)}払い ／ {accountName(c.withdrawalAccountId)}

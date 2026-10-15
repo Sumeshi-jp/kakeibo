@@ -14,7 +14,7 @@ export function MonthSwitcher() {
       <div className="flex items-center gap-2">
         <h2 className="figure text-2xl">{monthHeading(month)}</h2>
         {month !== current && (
-          <button type="button" onClick={() => setMonth(current)} className="min-h-8 rounded-lg border border-ink px-3 text-xs">
+          <button type="button" onClick={() => setMonth(current)} className="hit-44 min-h-8 rounded-lg border border-ink px-3 text-xs">
             今月
           </button>
         )}

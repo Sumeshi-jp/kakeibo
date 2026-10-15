@@ -79,7 +79,7 @@ export function CategoryBreakdown({ totals, emptyText }: { totals: CategoryTotal
               </td>
               <td className="py-2 pl-2">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="truncate">{r.name}</span>
+                  <span className="truncate" title={r.name}>{r.name}</span>
                   <span className="flex shrink-0 items-center">
                     <Amount value={r.total} className="font-bold" />
                     <span className="ml-2 inline-block w-9 text-right text-xs text-slate tabular">{Math.round(r.share * 100)}%</span>

@@ -28,11 +28,11 @@ function Row({ tx, lookups }: { tx: Transaction; lookups: Lookups }) {
           <CategoryIcon icon={cat?.icon ?? 'ellipsis'} color={cat?.color ?? '#595959'} />
         )}
         <span className="min-w-0 flex-1">
-          <span className="block truncate">
+          <span className="block truncate" title={tx.memo ? `${title}　${tx.memo}` : title}>
             {title}
             {tx.memo && <span className="ml-2 text-sm text-slate">{tx.memo}</span>}
           </span>
-          <span className="flex items-center gap-1 truncate text-xs text-slate">
+          <span className="flex items-center gap-1 truncate text-xs text-slate" title={sub}>
             {tx.source.kind === 'card' && <CreditCard size={12} aria-label="クレカ" />}
             {sub}
           </span>
