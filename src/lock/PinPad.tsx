@@ -50,13 +50,14 @@ export function PinPad({ length, onComplete, disabled = false }: PinPadProps) {
   })
 
   return (
-    <div className="flex flex-col items-center gap-8 select-none">
+    <div className="flex flex-col items-center gap-7 select-none">
       <div className={`flex gap-4 ${shake ? 'animate-[shake_0.4s]' : ''}`} aria-label={`${pin.length}桁入力済み`} role="status">
         {Array.from({ length }, (_, i) => (
-          <span key={i} className={`size-3.5 rounded-full border-2 border-ink ${i < pin.length ? 'bg-ink' : ''}`} />
+          <span key={i} className={`size-4 rounded-full border-2 border-ink ${i < pin.length ? 'bg-ink' : ''}`} />
         ))}
       </div>
-      <div className="grid grid-cols-3 gap-3">
+      {/* iPhone のパスコード画面に近い大きさと間隔（押せる範囲がひと目でわかるよう、ボタン全体に色を塗る） */}
+      <div className="grid grid-cols-3 gap-x-6 gap-y-4">
         {KEYS.map((k, i) =>
           k === '' ? (
             <span key={i} />
@@ -67,9 +68,9 @@ export function PinPad({ length, onComplete, disabled = false }: PinPadProps) {
               disabled={disabled}
               onClick={() => press(k)}
               aria-label={k === 'del' ? '1文字消す' : k}
-              className={`grid size-18 place-items-center rounded-full text-2xl disabled:opacity-40 ${k === 'del' ? 'text-slate' : 'border border-hairline active:bg-soft'}`}
+              className={`grid size-20 place-items-center rounded-full text-3xl font-medium tabular disabled:opacity-40 ${k === 'del' ? 'text-charcoal' : 'bg-soft text-ink active:bg-hairline'}`}
             >
-              {k === 'del' ? <Delete size={24} /> : k}
+              {k === 'del' ? <Delete size={28} /> : k}
             </button>
           ),
         )}

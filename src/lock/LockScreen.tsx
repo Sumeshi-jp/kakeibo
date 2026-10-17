@@ -35,7 +35,7 @@ export function LockScreen() {
   }
 
   return (
-    <main className="pt-safe flex min-h-dvh flex-col items-center justify-center gap-8 bg-canvas px-6">
+    <main className="pt-safe pb-safe flex min-h-dvh flex-col items-center justify-center gap-6 bg-canvas px-6">
       <Brand size="lg" as="h1" />
       <p className="text-sm text-slate" role="alert">
         {waitMs > 0 ? `${Math.ceil(waitMs / 1000)}秒後にもう一度入力できます` : (message ?? 'PIN を入力してください')}
